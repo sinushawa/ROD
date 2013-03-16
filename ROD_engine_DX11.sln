@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 11
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROD_engine_DX11", "ROD_main\ROD_engine_DX11.csproj", "{EEC84679-CACB-4CDC-AA24-50AE358376F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROD_core", "ROD_core\ROD_core.csproj", "{BF294993-6A68-4014-B771-399856DF2662}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+		Svn-Managed = True
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		test|Any CPU = test|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF294993-6A68-4014-B771-399856DF2662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF294993-6A68-4014-B771-399856DF2662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF294993-6A68-4014-B771-399856DF2662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF294993-6A68-4014-B771-399856DF2662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF294993-6A68-4014-B771-399856DF2662}.test|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF294993-6A68-4014-B771-399856DF2662}.test|Any CPU.Build.0 = Debug|Any CPU
+		{EEC84679-CACB-4CDC-AA24-50AE358376F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC84679-CACB-4CDC-AA24-50AE358376F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC84679-CACB-4CDC-AA24-50AE358376F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC84679-CACB-4CDC-AA24-50AE358376F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEC84679-CACB-4CDC-AA24-50AE358376F2}.test|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC84679-CACB-4CDC-AA24-50AE358376F2}.test|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,15 @@
+Texture2D dtext: register(t0);            // Diffuse texture for mesh
+
+SamplerState MeshTextureSampler : register(s0);
+
+struct VS_OUTPUT
+{
+    float4 Position     : SV_POSITION;
+	float2 Texcoord		: TEXCOORD;
+};
+
+float4 PS(VS_OUTPUT input) : SV_TARGET
+{
+	float3 diffuseColor = dtext.Sample(MeshTextureSampler, input.Texcoord);
+	return float4(diffuseColor,1);
+}

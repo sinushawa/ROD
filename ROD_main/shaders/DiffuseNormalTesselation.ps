@@ -1,0 +1,62 @@
+cbuffer psConstant
+{
+	float4 LightColor;
+};
+
+Texture2D dtext: register(t0);            // Diffuse texture for mesh
+Texture2D ntext: register(t1);            // normal texture for mesh
+Texture2D stext: register(t2);            // specular texture for mesh
+
+SamplerState MeshTextureSampler : register(s0);
+
+struct DS_OUTPUT
+{
+	float4 Position     : SV_POSITION;
+	float3 Normal		: NORMAL;
+	float2 Texcoord		: TEXCOORD;
+	float3 Binormal		: BINORMAL;
+	float3 Tangent		: TANGENT;
+	float3 ViewDirection : TEXCOORD1;
+	float3 LightDirection : TEXCOORD2;
+};
+
+float4 PS(DS_OUTPUT input) : SV_TARGET
+{
+	float4 textureColor;
+	float4 bumpMap;
+	float3 totalNormal;
+	float3 lightDir;
+	float lightIntensity;
+	float4 color;
+
+
+	// Sample the texture pixel at this location.
+	textureColor = dtext.Sample(MeshTextureSampler, input.Texcoord);
+	
+	// Sample the pixel in the bump map.
+	bumpMap =  ntext.Sample(MeshTextureSampler, input.Texcoord);
+
+	// Expand the range of the normal value from (0, +1) to (-1, +1).
+	// I had to invert the bump because of faulty exporter
+	bumpMap = (-bumpMap * 2.0f) + 1.0f;
+
+	// Calculate the normal from the data in the bump map.
+	totalNormal = input.Normal + bumpMap.x * input.Tangent + bumpMap.y * input.Binormal;
+	
+	// Normalize the resulting bump normal.
+	totalNormal = normalize(totalNormal);
+	// Calculate the amount of light on this pixel based on the total normal value.
+	lightIntensity =  saturate(dot(totalNormal, input.LightDirection));
+
+	// Compute the half vector
+    float3 half_vector = normalize(input.LightDirection + input.ViewDirection);
+	// Compute the angle between the half vector and normal
+    float  HdotN = max( 0.0f, dot( half_vector, totalNormal ) );
+	// Compute the specular colour
+    float3 specular = LightColor * pow( HdotN, 32 );
+
+	float diffuseLightingFactor = saturate(lightIntensity*LightColor)+0.085f;
+	specular = saturate(specular*LightColor);
+	float3 result = textureColor*diffuseLightingFactor+textureColor*specular;
+	return float4(result,1);
+}

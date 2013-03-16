@@ -1,0 +1,60 @@
+cbuffer dsc
+{
+	matrix World;
+	matrix ViewProjection;
+	float3 eyePos;
+	float padding1;
+	float3 LightPos;
+	float padding2;
+}
+
+struct HS_CONSTANT_DATA_OUTPUT
+{
+    float Edges[3]	: SV_TessFactor;
+    float Inside	: SV_InsideTessFactor;
+};
+
+struct HS_CONTROL_POINT_OUTPUT
+{
+    float4 WorldPos		: WORLDPOS;
+    float3 Normal		: NORMAL;
+	float2 Texcoord		: TEXCOORD;
+	float3 Binormal		: BINORMAL;
+	float3 Tangent		: TANGENT;
+};
+
+struct DS_OUTPUT
+{
+    float4 Position     : SV_POSITION;
+	float3 Normal		: NORMAL;
+	float2 Texcoord		: TEXCOORD;
+	float3 Binormal		: BINORMAL;
+	float3 Tangent		: TANGENT;
+	float3 ViewDirection : TEXCOORD1;
+	float3 LightDirection : TEXCOORD2;
+};
+
+[domain("tri")]
+DS_OUTPUT DS( HS_CONSTANT_DATA_OUTPUT input, float3 BarycentricCoordinates : SV_DomainLocation, const OutputPatch<HS_CONTROL_POINT_OUTPUT, 3> TrianglePatch )
+{
+    DS_OUTPUT output = (DS_OUTPUT)0;
+
+    // Interpolate world space position with barycentric coordinates
+    float3 worldPos = BarycentricCoordinates.x * TrianglePatch[0].WorldPos + BarycentricCoordinates.y * TrianglePatch[1].WorldPos + BarycentricCoordinates.z * TrianglePatch[2].WorldPos;
+	output.Normal = BarycentricCoordinates.x * TrianglePatch[0].Normal + BarycentricCoordinates.y * TrianglePatch[1].Normal + BarycentricCoordinates.z * TrianglePatch[2].Normal;
+	output.Tangent = BarycentricCoordinates.x * TrianglePatch[0].Tangent + BarycentricCoordinates.y * TrianglePatch[1].Tangent + BarycentricCoordinates.z * TrianglePatch[2].Tangent;
+	output.Binormal = BarycentricCoordinates.x * TrianglePatch[0].Binormal + BarycentricCoordinates.y * TrianglePatch[1].Binormal + BarycentricCoordinates.z * TrianglePatch[2].Binormal;
+	output.Texcoord = BarycentricCoordinates.x * TrianglePatch[0].Texcoord + BarycentricCoordinates.y * TrianglePatch[1].Texcoord + BarycentricCoordinates.z * TrianglePatch[2].Texcoord;
+    // Transform world position with viewprojection matrix
+    output.Position = mul( float4( worldPos.xyz, 1.0f ), World );
+	// Calculate the position of the vertex in the world.
+	output.ViewDirection = output.Position.xyz - eyePos.xyz;
+	output.ViewDirection = normalize(output.ViewDirection);
+	output.LightDirection = output.Position.xyz - LightPos.xyz;
+	output.LightDirection = normalize(output.LightDirection);
+    output.Position = mul( output.Position, ViewProjection );
+	output.Normal = mul( output.Normal,(float3x3)World );
+
+    
+    return output;
+}
