@@ -16,6 +16,7 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using ROD_core.Graphics.Assets;
 
 namespace ROD_engine_DX11
 {
@@ -111,41 +112,41 @@ namespace ROD_engine_DX11
             
 
             // material definition
-            ROD_core.Material body_material = new ROD_core.Material("body_mat");
-            body_material.maps.Add(ROD_core.MapSlot.Diffuse, "AsManBodyD.jpg");
-            body_material.maps.Add(ROD_core.MapSlot.Normal, "AsManBodyN.jpg");
-            body_material.maps.Add(ROD_core.MapSlot.Specular, "AsManBodyS.jpg");
+            Material body_material = new Material("body_mat");
+            body_material.maps.Add(MapSlot.Diffuse, "AsManBodyD.jpg");
+            body_material.maps.Add(MapSlot.Normal, "AsManBodyN.jpg");
+            body_material.maps.Add(MapSlot.Specular, "AsManBodyS.jpg");
 
-            ROD_core.Material head_material = new ROD_core.Material("head_mat");
-            head_material.maps.Add(ROD_core.MapSlot.Diffuse, "AsManHeadD.jpg");
-            head_material.maps.Add(ROD_core.MapSlot.Normal, "AsManHeadN.jpg");
-            head_material.maps.Add(ROD_core.MapSlot.Specular, "AsManHeadS.jpg");
+            Material head_material = new Material("head_mat");
+            head_material.maps.Add(MapSlot.Diffuse, "AsManHeadD.jpg");
+            head_material.maps.Add(MapSlot.Normal, "AsManHeadN.jpg");
+            head_material.maps.Add(MapSlot.Specular, "AsManHeadS.jpg");
 
-            ROD_core.Material hair_material = new ROD_core.Material("hair_mat");
-            hair_material.maps.Add(ROD_core.MapSlot.Diffuse, "AsManHairD.jpg");
-            hair_material.maps.Add(ROD_core.MapSlot.Normal, "AsManHairN.jpg");
-            hair_material.maps.Add(ROD_core.MapSlot.Specular, "AsManHairS.jpg");
+            Material hair_material = new Material("hair_mat");
+            hair_material.maps.Add(MapSlot.Diffuse, "AsManHairD.jpg");
+            hair_material.maps.Add(MapSlot.Normal, "AsManHairN.jpg");
+            hair_material.maps.Add(MapSlot.Specular, "AsManHairS.jpg");
 
-            ROD_core.Material bricks_material = new ROD_core.Material("bricks_mat");
-            bricks_material.maps.Add(ROD_core.MapSlot.Diffuse, "JP_Brick01_Bump.jpg");
+            Material bricks_material = new Material("bricks_mat");
+            bricks_material.maps.Add(MapSlot.Diffuse, "JP_Brick01_Bump.jpg");
 
             // !!!!!!!!! Material used to render texture to backbuffer
-            ROD_core.Material Render_TO_Tex_material = new ROD_core.Material("RTT_mat");
-            Render_TO_Tex_material.maps.Add(ROD_core.MapSlot.Deferred, "");
+            Material Render_TO_Tex_material = new Material("RTT_mat");
+            Render_TO_Tex_material.maps.Add(MapSlot.Deferred, "");
             Render_TO_Tex_material.textures.Add(render_texture.ShaderResourceView);
 
             //
 
-            ROD_core.Mesh body_mesh = ROD_core.Mesh.createFromFile("body.rod");
-            ROD_core.Model body = new ROD_core.Model(body_mesh, body_material, true);
-            ROD_core.Mesh head_mesh = ROD_core.Mesh.createFromFile("head.rod");
-            ROD_core.Model head = new ROD_core.Model(head_mesh, head_material, true);
-            ROD_core.Mesh eyes_mesh = ROD_core.Mesh.createFromFile("eyes.rod");
-            ROD_core.Model eyes = new ROD_core.Model(eyes_mesh, head_material, true);
-            ROD_core.Mesh hair_mesh = ROD_core.Mesh.createFromFile("hair.rod");
-            ROD_core.Model hair = new ROD_core.Model(hair_mesh, hair_material, true);
-            ROD_core.Mesh box_mesh = ROD_core.Mesh.createFromFile("box.rod");
-            ROD_core.Model box = new ROD_core.Model(box_mesh, bricks_material, false);
+            Mesh body_mesh = Mesh.createFromFile("body.rod");
+            Model body = new Model(body_mesh, body_material, true);
+            Mesh head_mesh = Mesh.createFromFile("head.rod");
+            Model head = new Model(head_mesh, head_material, true);
+            Mesh eyes_mesh = Mesh.createFromFile("eyes.rod");
+            Model eyes = new Model(eyes_mesh, head_material, true);
+            Mesh hair_mesh = Mesh.createFromFile("hair.rod");
+            Model hair = new Model(hair_mesh, hair_material, true);
+            Mesh box_mesh = Mesh.createFromFile("box.rod");
+            Model box = new Model(box_mesh, bricks_material, false);
 
             scene.models.Add(body);
             scene.models.Add(head);

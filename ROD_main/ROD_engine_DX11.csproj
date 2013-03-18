@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ROD_engine_DX11</RootNamespace>
     <AssemblyName>ROD_engine_DX11</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -31,6 +31,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,23 +58,23 @@
     <OutputPath>bin\test\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>R:\Program Files (x86)\SharpDX\Bin\Standard-net20\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>R:\Program Files (x86)\SharpDX\Bin\Standard-net20\SharpDX.D3DCompiler.dll</HintPath>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>R:\Program Files (x86)\SharpDX\Bin\Standard-net20\SharpDX.Direct2D1.dll</HintPath>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>R:\Program Files (x86)\SharpDX\Bin\Standard-net20\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DirectInput, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>R:\Program Files (x86)\SharpDX\Bin\Standard-net20\SharpDX.DirectInput.dll</HintPath>
+    <Reference Include="SharpDX.DirectInput">
+      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.DirectInput.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>R:\Program Files (x86)\SharpDX\Bin\Standard-net20\SharpDX.DXGI.dll</HintPath>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml.Linq">
@@ -104,6 +105,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="shaders\DiffuseNormalTesselation_ward.ps">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

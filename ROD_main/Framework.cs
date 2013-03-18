@@ -203,8 +203,8 @@ namespace ROD_engine_DX11
             // Setup the camera viewport
             var viewport = new Viewport()
             {
-                TopLeftX = 0,
-                TopLeftY = 0,
+                X = 0,
+                Y = 0,
                 Width = width,
                 Height = height,
                 MinDepth = 0.0f,

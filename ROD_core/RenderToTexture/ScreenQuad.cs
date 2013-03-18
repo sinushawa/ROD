@@ -6,6 +6,7 @@ using System.Text;
 using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using ROD_core.Graphics.Assets;
 
 namespace ROD_core.RenderToTexture
 {

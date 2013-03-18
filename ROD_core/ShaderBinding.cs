@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SharpDX.Direct3D11;
 using SharpDX.D3DCompiler;
+using ROD_core.Graphics.Assets;
 
 namespace ROD_core
 {
