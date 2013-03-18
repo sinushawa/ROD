@@ -8,12 +8,32 @@ namespace ROD_core.Graphics.Animation
 {
     interface IAnimation
     {
-        SequenceTiming time;
-        float offset;
-        float scale;
+        SequenceTiming time
+        {
+            get;
+            set;
+        }
+        float offset
+        {
+            get;
+            set;
+        }
+        float scale
+        {
+            get;
+            set;
+        }
 
-        AnimationType animationType;
-        List<Model> targets;
+        AnimationType animationType
+        {
+            get;
+            set;
+        }
+        List<Model> targets
+        {
+            get;
+            set;
+        }
 
         void UpdateTargets();
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ROD_core.Graphics.Assets;
 
 namespace ROD_core.Graphics.Animation
 {
@@ -14,9 +15,76 @@ namespace ROD_core.Graphics.Animation
 
     public class Sequence :IAnimation
     {
-        public SequenceTiming time;
+        private SequenceTiming _time;
 
-        public float offset = 0.0f;
-        public float scale = 1.0f;
+        private float _offset = 0.0f;
+        private float _scale = 1.0f;
+        private AnimationType _animationType;
+        private List<Model> _targets;
+
+        SequenceTiming time
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        float IAnimation.offset
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        float IAnimation.scale
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        AnimationType IAnimation.animationType
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        List<Model> IAnimation.targets
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void UpdateTargets()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
