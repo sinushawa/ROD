@@ -10,7 +10,7 @@ namespace ROD_core.Graphics.Animation
     {
         public int id;
         public string name;
-        public List<Sequence> sequences;
+        public Dictionary<TimeSpan,Sequence> sequences;
 
         public AnimationTrack(int _id)
         {

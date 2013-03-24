@@ -13,11 +13,6 @@ namespace ROD_core.Graphics.Animation
             get;
             set;
         }
-        float offset
-        {
-            get;
-            set;
-        }
         float scale
         {
             get;
