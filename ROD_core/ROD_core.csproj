@@ -37,16 +37,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.D3DCompiler">
-      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.D3DCompiler.dll</HintPath>
+      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D11">
-      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.Direct3D11.dll</HintPath>
+      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI">
-      <HintPath>..\..\..\C# ressources\SharpDX\Bin\Standard-net40\SharpDX.DXGI.dll</HintPath>
+      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -61,6 +61,7 @@
     <Compile Include="Graphics\Animation\AnimationTrack.cs" />
     <Compile Include="Graphics\Animation\AnimationType.cs" />
     <Compile Include="Graphics\Animation\IAnimation.cs" />
+    <Compile Include="Graphics\Animation\Clip.cs" />
     <Compile Include="Graphics\Animation\Sequence.cs" />
     <Compile Include="Mathematics\Math_helpers.cs" />
     <Compile Include="RenderToTexture\RenderTexture.cs" />

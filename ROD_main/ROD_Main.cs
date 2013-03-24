@@ -207,7 +207,7 @@ namespace ROD_engine_DX11
                 keyboard.Poll();
                 keyboard.GetCurrentState(ref keyboardState);
                 List<SharpDX.DirectInput.Key> pressed_keys = keyboardState.PressedKeys;
-                if (keyboardState.IsPressed(SharpDX.DirectInput.Key.UpArrow))
+                if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Up))
                 {
                     camset_default.eye.Y += 5.0f;
                     camset_default.at.Y += 5.0f;

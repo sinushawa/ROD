@@ -2,80 +2,57 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ROD_core.Graphics.Assets;
 
 namespace ROD_core.Graphics.Animation
 {
-    public struct SequenceTiming
+    public class WeightedClip
     {
-        public TimeSpan duration;
-        public TimeSpan startOffset;
-        public TimeSpan endOffset;
+        public float weight;
+        public Clip clip;
+
+        public WeightedClip(Clip _clip):this(_clip, 1.0f)
+        {
+        }
+        public WeightedClip(Clip _clip, float _weight)
+        {
+            clip = _clip;
+            weight = _weight;
+        }
     }
 
-    public class Sequence :IAnimation
+    public class Sequence
     {
-        private SequenceTiming _time;
-
-        private float _scale = 1.0f;
-        private AnimationType _animationType;
-        private List<Model> _targets;
+        private List<WeightedClip> _weightedClips;
 
         public Sequence()
         {
         }
 
-        SequenceTiming time
+        public bool AddClip(WeightedClip _weightedClip)
         {
-            get
+            if (_weightedClips.Count == 0)
             {
-                return _time;
+                _weightedClips.Add(_weightedClip);
+                return true;
             }
-            set
+            else if (_weightedClips.Count > 0 && _weightedClip.clip.target == _weightedClips[0].clip.target)
             {
-                throw new NotImplementedException();
+                _weightedClips.Add(_weightedClip);
+                NormalizeWeights();
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
-
-        float scale
+        private void NormalizeWeights()
         {
-            get
+            float weightsTotal = _weightedClips.Sum(x => x.weight);
+            for (int i = 0; i < _weightedClips.Count; i++)
             {
-                return _scale;
+                _weightedClips[i].weight = (_weightedClips[i].weight / weightsTotal);
             }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        AnimationType animationType
-        {
-            get
-            {
-                return _animationType;
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        List<Model> targets
-        {
-            get
-            {
-                return _targets;
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public void UpdateTargets()
-        {
-            throw new NotImplementedException();
         }
     }
 }

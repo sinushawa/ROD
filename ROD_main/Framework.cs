@@ -26,7 +26,7 @@ namespace ROD_engine_DX11
         public IntPtr wParam;
         public IntPtr lParam;
         public uint time;
-        public Point p;
+        public System.Drawing.Point p;
     }
 
     public abstract class Framework
@@ -89,7 +89,7 @@ namespace ROD_engine_DX11
                 TopMost = true,
             };
             Window.StartPosition = FormStartPosition.Manual;
-            Window.Location = new Point(1100, 80);
+            Window.Location = new System.Drawing.Point(1100, 80);
             Window.FormBorderStyle = FormBorderStyle.Fixed3D;
             Window.WindowState =FormWindowState.Normal;
             Window.CreateControl();
@@ -210,7 +210,7 @@ namespace ROD_engine_DX11
                 MinDepth = 0.0f,
                 MaxDepth = 1.0f,
             };
-            DContext.Rasterizer.SetViewports(viewport);
+            DContext.Rasterizer.SetViewport(viewport);
 
             Stopwatch = new Stopwatch();
         }
@@ -304,7 +304,7 @@ namespace ROD_engine_DX11
             cooperativeLevel |= SharpDX.DirectInput.CooperativeLevel.Foreground;
             keyboard.SetCooperativeLevel(Window, cooperativeLevel);
             keyboard.Acquire();
-            Point startPoint = System.Windows.Forms.Cursor.Position;
+            System.Drawing.Point startPoint = System.Windows.Forms.Cursor.Position;
             mouseCoord.X = Window.PointToClient(startPoint).X;
             mouseCoord.Y = Window.PointToClient(startPoint).Y;
             mouseState = new SharpDX.DirectInput.MouseState();

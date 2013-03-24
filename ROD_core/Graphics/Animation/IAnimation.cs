@@ -8,7 +8,14 @@ namespace ROD_core.Graphics.Animation
 {
     interface IAnimation
     {
-        SequenceTiming time
+        event EventHandler ClipFinished;
+
+        TimeSpan actualLocalTime
+        {
+            get;
+            set;
+        }
+        ClipTiming time
         {
             get;
             set;
@@ -24,12 +31,12 @@ namespace ROD_core.Graphics.Animation
             get;
             set;
         }
-        List<Model> targets
+        Model target
         {
             get;
             set;
         }
 
-        void UpdateTargets();
+        void Update();
     }
 }
