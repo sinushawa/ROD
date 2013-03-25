@@ -25,6 +25,11 @@ namespace ROD_core.Graphics.Animation
             get;
             set;
         }
+        bool isLooping
+        {
+            get;
+            set;
+        }
 
         AnimationType animationType
         {

@@ -5,11 +5,8 @@ using System.Text;
 
 namespace ROD_core.Graphics.Animation
 {
-    public enum AnimationType
+    class Clip_Skinning : Clip
     {
-        Particles,
-        Visual_Effect,
-        Global_transform,
-        Skinning
+        public List<Pose> animationData;
     }
 }

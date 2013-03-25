@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SharpDX;
 
 namespace ROD_core.Graphics.Animation
 {
-    public enum AnimationType
+    public class Pose
     {
-        Particles,
-        Visual_Effect,
-        Global_transform,
-        Skinning
+        public string name;
+        public Dictionary<int, Matrix> _localJoints;
     }
 }

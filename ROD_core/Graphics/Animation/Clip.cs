@@ -19,8 +19,8 @@ namespace ROD_core.Graphics.Animation
 
         private TimeSpan _actualLocalTime;
         private ClipTiming _time;
-
         private float _scale = 1.0f;
+        private bool _isLooping = false;
         private AnimationType _animationType;
         private Model _target;
 
@@ -62,6 +62,17 @@ namespace ROD_core.Graphics.Animation
                 _scale=(float)value;
             }
         }
+        public bool isLooping
+        {
+            get
+            {
+                return _isLooping;
+            }
+            set
+            {
+                _isLooping = (bool)value;
+            }
+        }
 
         public AnimationType animationType
         {
@@ -89,7 +100,7 @@ namespace ROD_core.Graphics.Animation
 
         public void Update(float _delta)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
