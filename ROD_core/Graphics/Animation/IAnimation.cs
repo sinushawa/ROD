@@ -6,7 +6,7 @@ using ROD_core.Graphics.Assets;
 
 namespace ROD_core.Graphics.Animation
 {
-    interface IAnimation
+    public interface IAnimation
     {
         event EventHandler ClipFinished;
 
@@ -42,6 +42,6 @@ namespace ROD_core.Graphics.Animation
             set;
         }
 
-        void Update();
+        void Update(long _delta);
     }
 }

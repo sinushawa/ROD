@@ -178,10 +178,11 @@ namespace ROD_engine_DX11
 
         public override void Dispose()
         {
-
+            scene.Dispose();
+            sq.Dispose();
             base.Dispose();
         }
-        protected override void MouseUpdate(float time, float step)
+        protected override void MouseUpdate(long time, long step)
         {
             mouse.Poll();
             mouse.GetCurrentState(ref mouseState);
@@ -200,7 +201,7 @@ namespace ROD_engine_DX11
             }
 
         }
-        protected override void KeyboardUpdate(float time, float step)
+        protected override void KeyboardUpdate(long time, long step)
         {
             try
             {
@@ -224,7 +225,7 @@ namespace ROD_engine_DX11
             }
         }
 
-        protected override void Update(float time, float step)
+        protected override void Update(long time, long step)
         {
             Vector3 LookAt = Vector3.Normalize(camset_default.at - camset_default.eye);
             camset_default.eye += (Vector3.Multiply(LookAt, ((float)zoom) / 100));
@@ -253,7 +254,7 @@ namespace ROD_engine_DX11
             LightPos = Vector3.TransformCoordinate(LightPos, Matrix.RotationQuaternion(RotLight));
         }
 
-        protected override void Render(float time, float step)
+        protected override void Render(long time, long step)
         {
             ROD_core.vsBuffer vsBuffer = new ROD_core.vsBuffer();
             vsBuffer.padding3 = 0;

@@ -10,7 +10,7 @@ using ROD_core.Graphics.Assets;
 
 namespace ROD_core
 {
-    public class Scene
+    public class Scene : Component
     {
         public List<Model> models;
 
@@ -27,6 +27,7 @@ namespace ROD_core
         {
             foreach(Model _model in models)
             {
+                ToDispose(_model);
                 _model.Initialize(Device);
             }
         }

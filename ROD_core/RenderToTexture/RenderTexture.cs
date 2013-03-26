@@ -10,7 +10,7 @@ using Device = SharpDX.Direct3D11.Device;
 
 namespace ROD_core.RenderToTexture
 {
-    public class RenderTexture
+    public class RenderTexture : Component
     {
         #region Variables / Properties
         private Texture2D texRenderTargetTexture { get; set; }
@@ -24,6 +24,8 @@ namespace ROD_core.RenderToTexture
         {
             try
             {
+                ToDispose(texRenderTargetTexture);
+                ToDispose(extRenderTargetTexture);
                 // Initialize and set up the render target description.
                 var textureDesc = new Texture2DDescription()
                 {

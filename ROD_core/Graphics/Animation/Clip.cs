@@ -13,9 +13,9 @@ namespace ROD_core.Graphics.Animation
         public TimeSpan endOffset;
     }
 
-    public class Clip :IAnimation
+    public abstract class Clip
     {
-        event EventHandler ClipFinished;
+        public event EventHandler ClipFinished;
 
         private TimeSpan _actualLocalTime;
         private ClipTiming _time;
@@ -98,9 +98,6 @@ namespace ROD_core.Graphics.Animation
             }
         }
 
-        public void Update(float _delta)
-        {
-            
-        }
+        public abstract void Update(long _delta);
     }
 }

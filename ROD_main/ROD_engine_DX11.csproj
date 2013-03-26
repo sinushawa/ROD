@@ -109,8 +109,12 @@
     <None Include="shaders\DiffuseNormalTesselation_ward.ps">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="shaders\Diffuse2D.vs" />
-    <None Include="shaders\Diffuse2D.ps" />
+    <None Include="shaders\Diffuse2D.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="shaders\Diffuse2D.ps">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="shaders\Diffuse.ps">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

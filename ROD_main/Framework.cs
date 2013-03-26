@@ -76,6 +76,8 @@ namespace ROD_engine_DX11
 
         public int frame_width;
         public int frame_height;
+
+        private long last_time;
         
 
         public Framework(string title, int width, int height, bool depth, bool stencil, bool _VSync)
@@ -226,7 +228,6 @@ namespace ROD_engine_DX11
             }
         }
 
-        private float last;
         private DepthStencilClearFlags depthStencilClear;
 
         private void ApplicationIdle(object sender, EventArgs e)
@@ -234,9 +235,9 @@ namespace ROD_engine_DX11
             // While there are no system messages, keep rendering
             while (IsIdle)
             {
-                float time = Stopwatch.ElapsedTicks / (float)Stopwatch.Frequency;
-                float delta = time - last;
-                last = time;
+                long time = Stopwatch.ElapsedTicks / Stopwatch.Frequency;
+                long delta = time - last_time;
+                last_time = time;
                 /*
                 if (delta < 100)
                 {
@@ -311,10 +312,10 @@ namespace ROD_engine_DX11
             keyboardState = new SharpDX.DirectInput.KeyboardState();            
         }
 
-        protected abstract void MouseUpdate(float time, float step);
-        protected abstract void KeyboardUpdate(float time, float step);
-        protected abstract void Update(float time, float step);
+        protected abstract void MouseUpdate(long time, long step);
+        protected abstract void KeyboardUpdate(long time, long step);
+        protected abstract void Update(long time, long step);
 
-        protected abstract void Render(float time, float step);
+        protected abstract void Render(long time, long step);
     }
 }

@@ -16,16 +16,20 @@ namespace ROD_core.Graphics.Assets
     [Serializable]
     public class Mesh : Component,ISerializable
     {
-        public string name;
+        public string meshName;
         private string filePath;
         public VertexStream _vertexStream;
         public IndexStream _indexStream;
         public Buffer vertexBuffer;
         public Buffer indexBuffer;
+        public BoundingBox boundingBox;
 
         public Mesh()
         {
-            
+            ToDispose(vertexBuffer);
+            ToDispose(indexBuffer);
+            ToDispose(_indexStream);
+            ToDispose(_vertexStream);
         }
 
         protected Mesh(SerializationInfo info, StreamingContext context)
@@ -55,7 +59,7 @@ namespace ROD_core.Graphics.Assets
             FileStream readStream = new FileStream(_filename, FileMode.Open);
             Mesh loadedMesh = (Mesh)bf.Deserialize(readStream);
             readStream.Close();
-            loadedMesh.name = System.IO.Path.GetFileNameWithoutExtension(_filename);
+            loadedMesh.meshName = System.IO.Path.GetFileNameWithoutExtension(_filename);
             return loadedMesh;
         }
         public static void saveToFile(Mesh mesh, string _filename)
@@ -64,13 +68,6 @@ namespace ROD_core.Graphics.Assets
             BinaryFormatter bFormatter = new BinaryFormatter();
             bFormatter.Serialize(stream, mesh);
             stream.Close();
-        }
-        public void Dispose()
-        {
-            ToDispose(vertexBuffer);
-            ToDispose(indexBuffer);
-            ToDispose(_indexStream);
-            ToDispose(_vertexStream);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace ROD_core.RenderToTexture
 		#region Constructors
 		public ScreenQuad()
 		{
+            ToDispose(mesh);
 		}
 		#endregion
 
@@ -149,11 +150,6 @@ namespace ROD_core.RenderToTexture
 			context.PixelShader.SetSampler(0, sampler);
 			context.DrawIndexed(mesh._indexStream.getIndexCount(), 0, 0);
 			context.PixelShader.SetShaderResource(0, null);
-		}
-
-		public void Dispose()
-		{
-			ToDispose(mesh);
 		}
 		#endregion
 	}

@@ -11,7 +11,7 @@ namespace ROD_core.Graphics.Assets
 {
     public class Model : Component
     {
-        public string name;
+        public string modelName;
         public Mesh mesh;
         public bool isSkinned = false;
         public bool isTesselated = false;
@@ -29,24 +29,25 @@ namespace ROD_core.Graphics.Assets
         public Model(Mesh _mesh)
         {
             mesh = _mesh;
-            name = _mesh.name;
+            modelName = _mesh.meshName;
         }
         public Model(Mesh _mesh, Material _material)
         {
             mesh = _mesh;
             material = _material;
-            name = _mesh.name;
+            modelName = _mesh.meshName;
         }
         public Model(Mesh _mesh, Material _material, bool _isTesselated)
         {
             mesh = _mesh;
             material = _material;
             isTesselated = _isTesselated;
-            name = _mesh.name;
+            modelName = _mesh.meshName;
         }
 
         public void Initialize(Device Device)
         {
+            ToDispose(mesh);
             _shaderSolution=ROD_core.ShaderBinding.GetCompatibleShader(this);
             layout = new InputLayout(Device, _shaderSolution.shaders_bytecode[Shaders.VertexShader], mesh._vertexStream.vertexDefinition.GetInputElements());
             
@@ -134,11 +135,6 @@ namespace ROD_core.Graphics.Assets
             //context.UpdateSubresource(ref psBuffer, _shaderSolution.shaders_buffers[Shaders.PixelShader][0]);
             context.PixelShader.SetSampler(0, sampler);
             context.DrawIndexed(mesh._indexStream.getIndexCount(), 0, 0);
-        }
-
-        public void Dispose()
-        {
-            ToDispose(mesh);
         }
     }
 }

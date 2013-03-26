@@ -65,6 +65,7 @@
     <Compile Include="Graphics\Animation\Clip.cs" />
     <Compile Include="Graphics\Animation\Pose.cs" />
     <Compile Include="Graphics\Animation\Sequence.cs" />
+    <Compile Include="LinqExtension.cs" />
     <Compile Include="Mathematics\Math_helpers.cs" />
     <Compile Include="RenderToTexture\RenderTexture.cs" />
     <Compile Include="Constant_buffer_structures.cs" />
