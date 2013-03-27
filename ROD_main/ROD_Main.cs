@@ -137,22 +137,22 @@ namespace ROD_engine_DX11
 
             //
 
-            Mesh body_mesh = Mesh.createFromFile("body.rod");
+            Mesh body_mesh = Mesh.createFromFile("bodyBB.rod");
             Model body = new Model(body_mesh, body_material, true);
-            Mesh head_mesh = Mesh.createFromFile("head.rod");
+            Mesh head_mesh = Mesh.createFromFile("headBB.rod");
             Model head = new Model(head_mesh, head_material, true);
-            Mesh eyes_mesh = Mesh.createFromFile("eyes.rod");
+            Mesh eyes_mesh = Mesh.createFromFile("eyesBB.rod");
             Model eyes = new Model(eyes_mesh, head_material, true);
-            Mesh hair_mesh = Mesh.createFromFile("hair.rod");
+            Mesh hair_mesh = Mesh.createFromFile("hairBB.rod");
             Model hair = new Model(hair_mesh, hair_material, true);
-            Mesh box_mesh = Mesh.createFromFile("box.rod");
-            Model box = new Model(box_mesh, bricks_material, false);
+            //Mesh box_mesh = Mesh.createFromFile("boxBB.rod");
+            //Model box = new Model(box_mesh, bricks_material, false);
 
             scene.models.Add(body);
             scene.models.Add(head);
             scene.models.Add(eyes);
             scene.models.Add(hair);
-            scene.models.Add(box);
+            //scene.models.Add(box);
 
             sq.material = Render_TO_Tex_material;
             sq.Initialize(Device);

@@ -22,7 +22,7 @@ namespace ROD_core.Graphics.Assets
         public IndexStream _indexStream;
         public Buffer vertexBuffer;
         public Buffer indexBuffer;
-        public BoundingBox boundingBox;
+        public BoundingBox _boundingBox;
 
         public Mesh()
         {
@@ -36,6 +36,7 @@ namespace ROD_core.Graphics.Assets
         {
             _vertexStream = (VertexStream)info.GetValue("vertexStream", typeof(VertexStream));
             _indexStream = (IndexStream)info.GetValue("indexStream", typeof(IndexStream));
+            _boundingBox = (BoundingBox)info.GetValue("boundingBox", typeof(BoundingBox));
             //var res= _vertexStream.getVertices();
         }
 
@@ -50,6 +51,7 @@ namespace ROD_core.Graphics.Assets
         {
             info.AddValue("vertexStream", _vertexStream, typeof(VertexStream));
             info.AddValue("indexStream", _indexStream, typeof(IndexStream));
+            info.AddValue("boundingBox", _boundingBox, typeof(BoundingBox));
         }
 
         public static Mesh createFromFile(string _filename)

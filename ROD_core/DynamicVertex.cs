@@ -37,6 +37,23 @@ namespace ROD_core
 			set { inputFormat = value; }
 		}
 	}
+    /// <summary>Structure to store bone indices in DynamicVertex classes. 
+    /// <para>Stores up to 4 indices in index0 ,1 ,2 and 3 of type byte, for unused indices unsed a weight of 0.0</para>
+    /// </summary> 
+    public struct BoneIndices
+    {
+        public byte index0;
+        public byte index1;
+        public byte index2;
+        public byte index3;
+        public BoneIndices(byte _index0, byte _index1, byte _index2, byte _index3)
+        {
+            index0 = _index0;
+            index1 = _index1;
+            index2 = _index2;
+            index3 = _index3;
+        }
+    }
 	[Flags]
 	public enum Semantic : long
 	{
@@ -52,9 +69,9 @@ namespace ROD_core
 		COLOR = (1 << 4),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32_Float, typeof(Vector3))]
 		BINORMAL = (1 << 5),
-		[SemanticAttribute(SharpDX.DXGI.Format.R8_UInt, typeof(UInt32))]
+		[SemanticAttribute(SharpDX.DXGI.Format.R8G8B8A8_UInt, typeof(UInt32[]))]
 		BLENDINDICES = (1 << 6),
-		[SemanticAttribute(SharpDX.DXGI.Format.R32_Float, typeof(float))]
+		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32A32_Float, typeof(Vector4))]
 		BLENDWEIGHT = (1 << 7),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32_Float, typeof(float))]
 		PSIZE = (1 << 8),
