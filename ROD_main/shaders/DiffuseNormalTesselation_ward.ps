@@ -1,0 +1,85 @@
+cbuffer psConstant
+{
+	float4 LightColor;
+};
+
+Texture2D dtext: register(t0);            // Diffuse texture for mesh
+Texture2D ntext: register(t1);            // normal texture for mesh
+Texture2D stext: register(t2);            // specular texture for mesh
+
+SamplerState MeshTextureSampler : register(s0);
+
+struct DS_OUTPUT
+{
+	float4 Position     : SV_POSITION;
+	float3 Normal		: NORMAL;
+	float2 Texcoord		: TEXCOORD;
+	float3 Binormal		: BINORMAL;
+	float3 Tangent		: TANGENT;
+	float3 ViewDirection : TEXCOORD1;
+	float3 LightDirection : TEXCOORD2;
+};
+
+float4 PS(DS_OUTPUT input) : SV_TARGET
+{
+	float4 textureColor;
+	float4 bumpMap;
+	float4 roughnessMap;
+	float3 totalNormal;
+	float3 lightDir;
+	float lightIntensity;
+	float4 color;
+
+
+	// Sample the texture pixel at this location.
+	textureColor = dtext.Sample(MeshTextureSampler, input.Texcoord);
+	
+	// Sample the pixel in the bump map.
+	bumpMap =  ntext.Sample(MeshTextureSampler, input.Texcoord);
+
+	roughnessMap = stext.Sample(MeshTextureSampler, input.Texcoord);
+
+	// Expand the range of the normal value from (0, +1) to (-1, +1).
+	// I had to invert the bump because of faulty exporter
+	bumpMap = (-bumpMap * 2.0f) + 1.0f;
+
+	// Calculate the normal from the data in the bump map.
+	totalNormal = input.Normal + bumpMap.x * input.Tangent + bumpMap.y * input.Binormal;
+	
+	// Normalize the resulting bump normal.
+	totalNormal = normalize(totalNormal);
+
+	// Calculate the amount of light on this pixel based on the total normal value.
+	lightIntensity =  saturate(dot(totalNormal, input.LightDirection));
+
+	// Compute the half vector
+    float3 half_vector = normalize(input.LightDirection + input.ViewDirection);
+ 
+    // Generate any useful aliases
+    float VdotN = dot( input.ViewDirection, totalNormal );
+    float LdotN = dot( input.LightDirection, totalNormal );
+    float HdotN = dot( half_vector, totalNormal );
+	// roughness between 0.0f and 1.0f
+	//float fRoughness = 0.4f;
+	float fRoughness = 1-roughnessMap.x;
+    float r_sq = (fRoughness * fRoughness) + 1e-5f;
+    // (Adding a small bias to r_sq stops unexpected
+    //  results caused by divide-by-zero)
+ 
+    // Define material properties
+    float3 Ps = float3( 1.0f, 1.0f, 1.0f );
+ 
+    // Compute the specular term
+    float exp_a = -pow( tan( acos( HdotN ) ), 2 );
+    float spec_num = exp( exp_a / r_sq );
+ 
+    float spec_den = 4.0f * 3.14159f * r_sq;
+    spec_den *= sqrt( abs(LdotN * VdotN) );
+ 
+    float3 Specular = Ps * ( spec_num / spec_den );
+
+	float3 cDiffus = textureColor;
+ 
+    // Composite the final value:
+    return float4( lightIntensity * (cDiffus + Specular ), 1.0f );
+}

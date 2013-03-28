@@ -168,6 +168,7 @@ namespace ROD_engine_DX11
             Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);     // Vector point upwards
             camset_default = new CameraSettings(eye, at, up);
             camset_transformed = new CameraSettings(eye, at, up);
+            projection = Matrix.PerspectiveFovLH(ROD_core.Mathematics.Math_helpers.ToRadians(55.0f), Window.ClientSize.Width / (float)Window.ClientSize.Height, 0.1f, 2000.0f);
             LightPos = new Vector3(0.0f, 100.0f, -300.0f);
             LightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
@@ -249,16 +250,13 @@ namespace ROD_engine_DX11
             accumaltedYaw += ROD_core.Mathematics.Math_helpers.ToRadians((mouseDelta.X / 5));
             accumaltedPitch += ROD_core.Mathematics.Math_helpers.ToRadians((mouseDelta.Y / 5));
             Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitY, accumaltedYaw);
-            
             Vector3 AxisPitch = Vector3.TransformCoordinate(Vector3.UnitX, Matrix.RotationQuaternion(RotYaw));
             Quaternion RotPitch = Quaternion.RotationAxis(AxisPitch, accumaltedPitch);
             Quaternion RotFinal = RotPitch * RotYaw;
-            //Quaternion RotFinal = QuatMultiply(RotPitch, RotYaw);
             Vector3 transformedEye = Vector3.TransformCoordinate(camset_default.eye, Matrix.RotationQuaternion(RotFinal));
             Vector3 transformedUp = Vector3.TransformCoordinate(camset_default.up, Matrix.RotationQuaternion(RotFinal));
             camset_transformed.eye = transformedEye;
             view = Matrix.LookAtLH(transformedEye, camset_default.at, transformedUp);
-            projection = Matrix.PerspectiveFovLH(ROD_core.Mathematics.Math_helpers.ToRadians(55.0f), Window.ClientSize.Width / (float)Window.ClientSize.Height, 0.1f, 2000.0f);
             viewproj = Matrix.Multiply(view, projection);
             viewproj.Transpose();
             Quaternion RotLight = Quaternion.RotationAxis(Vector3.UnitY, ((step / 15) * ROD_core.Mathematics.Math_helpers.ToRadians(360)));

@@ -288,6 +288,9 @@ namespace ROD_engine_DX11
             zAxis.Y = viewMatrix.M23;
             zAxis.Z = viewMatrix.M33;
 
+
+            /*
+
             // Calculate the new camera position. The 'idealPosition' is where
             // the camera should be positioned. The camera should be positioned
             // directly behind the target at the required offset distance. What
@@ -349,6 +352,8 @@ namespace ROD_engine_DX11
             viewMatrix.M24 = 0.0f;
             viewMatrix.M34 = 0.0f;
             viewMatrix.M44 = 1.0f;
+            
+            */ 
         }
 
         #endregion
