@@ -52,10 +52,12 @@ namespace ROD_engine_DX11
         private float accumaltedYaw = 0;
         private float accumaltedPitch = 0;
 
+        public Stopwatch timer;
+
         public ROD_Main()
             : base("FrameDX", 1280, 800, true, false, true)
         {
-
+            timer = new Stopwatch();
             #region HLSL definition
 
             //Shader for diffuse texture, normal texture and bump with tesselation
@@ -182,13 +184,20 @@ namespace ROD_engine_DX11
             sq.Dispose();
             base.Dispose();
         }
-        protected override void MouseUpdate(long time, long step)
+        protected override void MouseUpdate(float time, float step)
         {
             mouse.Poll();
             mouse.GetCurrentState(ref mouseState);
             if (mouseState.Buttons[1])
             {
+                //mouseDelta.X = 5;
+                //mouseDelta.Y = 1;
+                if (!timer.IsRunning)
+                {
+                    timer.Start();
+                }
                 mouseDelta.X = mouseState.X;
+                Debug.WriteLine("25: " + timer.ElapsedMilliseconds.ToString() + "/" + mouseDelta.ToString());
                 mouseDelta.Y = mouseState.Y;
             }
             else
@@ -201,7 +210,7 @@ namespace ROD_engine_DX11
             }
 
         }
-        protected override void KeyboardUpdate(long time, long step)
+        protected override void KeyboardUpdate(float time, float step)
         {
             try
             {
@@ -225,7 +234,7 @@ namespace ROD_engine_DX11
             }
         }
 
-        protected override void Update(long time, long step)
+        protected override void Update(float time, float step)
         {
             Vector3 LookAt = Vector3.Normalize(camset_default.at - camset_default.eye);
             camset_default.eye += (Vector3.Multiply(LookAt, ((float)zoom) / 100));
@@ -240,9 +249,11 @@ namespace ROD_engine_DX11
             accumaltedYaw += ROD_core.Mathematics.Math_helpers.ToRadians((mouseDelta.X / 5));
             accumaltedPitch += ROD_core.Mathematics.Math_helpers.ToRadians((mouseDelta.Y / 5));
             Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitY, accumaltedYaw);
+            
             Vector3 AxisPitch = Vector3.TransformCoordinate(Vector3.UnitX, Matrix.RotationQuaternion(RotYaw));
             Quaternion RotPitch = Quaternion.RotationAxis(AxisPitch, accumaltedPitch);
-            Quaternion RotFinal = RotYaw * RotPitch;
+            Quaternion RotFinal = RotPitch * RotYaw;
+            //Quaternion RotFinal = QuatMultiply(RotPitch, RotYaw);
             Vector3 transformedEye = Vector3.TransformCoordinate(camset_default.eye, Matrix.RotationQuaternion(RotFinal));
             Vector3 transformedUp = Vector3.TransformCoordinate(camset_default.up, Matrix.RotationQuaternion(RotFinal));
             camset_transformed.eye = transformedEye;
@@ -254,7 +265,7 @@ namespace ROD_engine_DX11
             LightPos = Vector3.TransformCoordinate(LightPos, Matrix.RotationQuaternion(RotLight));
         }
 
-        protected override void Render(long time, long step)
+        protected override void Render(float time, float step)
         {
             ROD_core.vsBuffer vsBuffer = new ROD_core.vsBuffer();
             vsBuffer.padding3 = 0;
@@ -272,6 +283,14 @@ namespace ROD_engine_DX11
             
             TargetView_To_Screen_output();
             sq.Render(DContext);
+        }
+        public static Quaternion QuatMultiply(Quaternion left, Quaternion right)
+        {
+            float qX = (left.W * right.X + left.X * right.W + left.Y * right.Z - left.Z * right.Y);
+            float qY = (left.W * right.Y - left.X * right.Z + left.Y * right.W + left.Z * right.X);
+            float qZ = (left.W * right.Z + left.X * right.Y - left.Y * right.X + left.Z * right.W);
+            float qW = (left.W * right.W - left.X * right.X - left.Y * right.Y - left.Z * right.Z);
+            return new Quaternion(qX, qY, qZ, qW);
         }
 
     }
