@@ -38,26 +38,20 @@ namespace ROD_engine_DX11
     {
 
         private Vector3 LightPos;
+        private Quaternion LightRotation;
         private Vector4 LightColor;
         private CameraSettings camset_default;
         private CameraSettings camset_transformed;
         private Matrix world;
-        private Matrix view;
-        private Matrix projection;
         private Matrix viewproj;
         private ROD_core.Scene scene;
         private ROD_core.RenderToTexture.RenderTexture render_texture;
         private ROD_core.RenderToTexture.ScreenQuad sq;
 
-        private float accumaltedYaw = 0;
-        private float accumaltedPitch = 0;
+        public ROD_core.Camera camera;
 
-        public Stopwatch timer;
-
-        public ROD_Main()
-            : base("FrameDX", 1280, 800, true, false, true)
+        public ROD_Main() : base("FrameDX", 1280, 800, true, false, true)
         {
-            timer = new Stopwatch();
             #region HLSL definition
 
             //Shader for diffuse texture, normal texture and bump with tesselation
@@ -164,19 +158,14 @@ namespace ROD_engine_DX11
         {
             // Set up the camera
             Vector3 eye = new Vector3(0.0f, 100.0f, -300.0f);   // Where the camera is looking from
-            Vector3 at = new Vector3(0.0f, 100.0f, 0.0f);     // Where the camera is looking at
+            Vector3 target = new Vector3(0.0f, 100.0f, 0.0f);     // Where the camera is looking at
             Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);     // Vector point upwards
-            camset_default = new CameraSettings(eye, at, up);
-            camset_transformed = new CameraSettings(eye, at, up);
-            projection = Matrix.PerspectiveFovLH(ROD_core.Mathematics.Math_helpers.ToRadians(55.0f), Window.ClientSize.Width / (float)Window.ClientSize.Height, 0.1f, 2000.0f);
+            camera = new ROD_core.Camera(eye, target);
+            camera.CreateProjection(55.0f, Window.ClientSize.Width, Window.ClientSize.Height, 0.1f, 2000.0f);
             LightPos = new Vector3(0.0f, 100.0f, -300.0f);
+            LightRotation = Quaternion.Identity;
             LightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
-
-            /*
-            Quaternion RotLight = Quaternion.RotationAxis(Vector3.UnitY, (ROD_core.Mathematics.Math_helpers.ToRadians(90)));
-            LightPos = Vector3.TransformCoordinate(LightPos, Matrix.RotationQuaternion(RotLight));
-             * */
         }
 
         public override void Dispose()
@@ -191,15 +180,9 @@ namespace ROD_engine_DX11
             mouse.GetCurrentState(ref mouseState);
             if (mouseState.Buttons[1])
             {
-                //mouseDelta.X = 5;
-                //mouseDelta.Y = 1;
-                if (!timer.IsRunning)
-                {
-                    timer.Start();
-                }
                 mouseDelta.X = mouseState.X;
-                Debug.WriteLine("25: " + timer.ElapsedMilliseconds.ToString() + "/" + mouseDelta.ToString());
                 mouseDelta.Y = mouseState.Y;
+                camera.Orbit((mouseDelta.X / 5), (mouseDelta.Y / 5));
             }
             else
             {
@@ -207,7 +190,8 @@ namespace ROD_engine_DX11
                 mouseDelta.Y = 0;
                 mouseCoord.X += mouseState.X;
                 mouseCoord.Y += mouseState.Y;
-                zoom = mouseState.Z * 5;
+                _mouseWheelFactor = mouseState.Z;
+                camera.Zoom(_mouseWheelFactor/5.0f);
             }
 
         }
@@ -237,30 +221,12 @@ namespace ROD_engine_DX11
 
         protected override void Update(float time, float step)
         {
-            Vector3 LookAt = Vector3.Normalize(camset_default.at - camset_default.eye);
-            camset_default.eye += (Vector3.Multiply(LookAt, ((float)zoom) / 100));
-            if (mouseDelta.X > -1 && mouseDelta.X < 1)
-            {
-                mouseDelta.X = 0;
-            }
-            if (mouseDelta.Y > -1 && mouseDelta.Y < 1)
-            {
-                mouseDelta.Y = 0;
-            }
-            accumaltedYaw += ROD_core.Mathematics.Math_helpers.ToRadians((mouseDelta.X / 5));
-            accumaltedPitch += ROD_core.Mathematics.Math_helpers.ToRadians((mouseDelta.Y / 5));
-            Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitY, accumaltedYaw);
-            Vector3 AxisPitch = Vector3.TransformCoordinate(Vector3.UnitX, Matrix.RotationQuaternion(RotYaw));
-            Quaternion RotPitch = Quaternion.RotationAxis(AxisPitch, accumaltedPitch);
-            Quaternion RotFinal = RotPitch * RotYaw;
-            Vector3 transformedEye = Vector3.TransformCoordinate(camset_default.eye, Matrix.RotationQuaternion(RotFinal));
-            Vector3 transformedUp = Vector3.TransformCoordinate(camset_default.up, Matrix.RotationQuaternion(RotFinal));
-            camset_transformed.eye = transformedEye;
-            view = Matrix.LookAtLH(transformedEye, camset_default.at, transformedUp);
-            viewproj = Matrix.Multiply(view, projection);
+            camera.Update();
+            viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
-            Quaternion RotLight = Quaternion.RotationAxis(Vector3.UnitY, ((step / 15) * ROD_core.Mathematics.Math_helpers.ToRadians(360)));
-            LightPos = Vector3.TransformCoordinate(LightPos, Matrix.RotationQuaternion(RotLight));
+            Quaternion RotLight = Quaternion.RotationAxis(Vector3.UnitY, ROD_core.Mathematics.Math_helpers.ToRadians(0.002f));
+            LightRotation = RotLight * LightRotation;
+            LightPos = Vector3.TransformCoordinate(LightPos, Matrix.RotationQuaternion(LightRotation));
         }
 
         protected override void Render(float time, float step)

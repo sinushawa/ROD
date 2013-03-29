@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic_structures\Vertex_POS_TEX.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Graphics\Animation\AnimationManager.cs" />
     <Compile Include="Graphics\Animation\AnimationTrack.cs" />
     <Compile Include="Graphics\Animation\AnimationType.cs" />

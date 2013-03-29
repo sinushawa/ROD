@@ -72,7 +72,7 @@ namespace ROD_engine_DX11
 
         protected Vector2 mouseCoord = new Vector2(0, 0);
         protected Vector2 mouseDelta = new Vector2(0, 0);
-        protected int zoom = 0;
+        protected int _mouseWheelFactor = 0;
 
         public int frame_width;
         public int frame_height;
