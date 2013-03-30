@@ -37,11 +37,9 @@ namespace ROD_engine_DX11
     public class ROD_Main : Framework
     {
 
-        private Vector3 LightPos;
-        private Quaternion LightRotation;
-        private Vector4 LightColor;
-        private CameraSettings camset_default;
-        private CameraSettings camset_transformed;
+        private Vector3 lightPos;
+        private Quaternion lightRotation;
+        private Vector4 lightColor;
         private Matrix world;
         private Matrix viewproj;
         private ROD_core.Scene scene;
@@ -162,9 +160,9 @@ namespace ROD_engine_DX11
             Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);     // Vector point upwards
             camera = new ROD_core.Camera(eye, target);
             camera.CreateProjection(55.0f, Window.ClientSize.Width, Window.ClientSize.Height, 0.1f, 2000.0f);
-            LightPos = new Vector3(0.0f, 100.0f, -300.0f);
-            LightRotation = Quaternion.Identity;
-            LightColor = new Vector4(1f, 1f, 1f, 1.0f);
+            lightPos = new Vector3(0.0f, 100.0f, -300.0f);
+            lightRotation = Quaternion.Identity;
+            lightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
         }
 
@@ -204,13 +202,27 @@ namespace ROD_engine_DX11
                 List<SharpDX.DirectInput.Key> pressed_keys = keyboardState.PressedKeys;
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Up))
                 {
-                    camset_default.eye.Y += 5.0f;
-                    camset_default.at.Y += 5.0f;
+                    camera.Pan(0.0f, 5.0f);
                 }
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Down))
                 {
-                    camset_default.eye.Y -= 5.0f;
-                    camset_default.at.Y -= 5.0f;
+                    camera.Pan(0.0f, -5.0f);
+                }
+                if (keyboardState.IsPressed(SharpDX.DirectInput.Key.D))
+                {
+                    camera.Pan(5.0f, 0.0f);
+                }
+                if (keyboardState.IsPressed(SharpDX.DirectInput.Key.A))
+                {
+                    camera.Pan(-5.0f, 0.0f);
+                }
+                if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Q))
+                {
+                    camera.Revolve(1.0f, 0.0f);
+                }
+                if (keyboardState.IsPressed(SharpDX.DirectInput.Key.E))
+                {
+                    camera.Revolve(-1.0f, 0.0f);
                 }
             }
             catch
@@ -224,9 +236,10 @@ namespace ROD_engine_DX11
             camera.Update();
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
-            Quaternion RotLight = Quaternion.RotationAxis(Vector3.UnitY, ROD_core.Mathematics.Math_helpers.ToRadians(0.002f));
-            LightRotation = RotLight * LightRotation;
-            LightPos = Vector3.TransformCoordinate(LightPos, Matrix.RotationQuaternion(LightRotation));
+            float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.05f * step);
+            Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
+            lightRotation = rotLight * lightRotation;
+            lightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
         }
 
         protected override void Render(float time, float step)
@@ -236,10 +249,10 @@ namespace ROD_engine_DX11
             vsBuffer.padding1 = 0;
             vsBuffer.World = world;
             vsBuffer.ViewProjection = viewproj;
-            vsBuffer.eyePos = camset_transformed.eye;
-            vsBuffer.LightPos = LightPos;
+            vsBuffer.eyePos = camera.cameraTransformed.eye;
+            vsBuffer.LightPos = lightPos;
             ROD_core.psBuffer psBuffer = new ROD_core.psBuffer();
-            psBuffer.LightColor = LightColor;
+            psBuffer.LightColor = lightColor;
             render_texture.SetRenderTarget(DContext, DepthStencilView);
             scene.Render(DContext, vsBuffer, psBuffer);
             //render_texture.SaveToFile(DContext, @"C:\test\test.jpg");

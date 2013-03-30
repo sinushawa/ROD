@@ -28,6 +28,7 @@ namespace ROD_core
         public Vector3 eyeTranslation;
         public Quaternion orbitRotation;
         public Vector3 targetTranslation;
+        public Quaternion revolveRotation;
         public Quaternion targetRotation;
         private Vector3 lookAt;
 
@@ -45,6 +46,7 @@ namespace ROD_core
             cameraTransformed = cameraOrigin;
             eyeTranslation = Vector3.Zero;
             orbitRotation = Quaternion.Identity;
+            revolveRotation = Quaternion.Identity;
             lookAt = Vector3.Normalize(_target - _eye);
         }
 
@@ -69,6 +71,12 @@ namespace ROD_core
         {
             cameraOrigin.eye += Vector3.Multiply(lookAt, (_zoomScale));
         }
+        public void Pan(float _X, float _Y)
+        {
+            Vector3 movement = new Vector3(_X, _Y, 0.0f);
+            eyeTranslation += movement;
+            targetTranslation += movement;
+        }
 
         /// <summary>Turn the camera around the target on global Y axis and local X axis. 
         /// </summary> 
@@ -84,9 +92,33 @@ namespace ROD_core
             Quaternion RotPitch = Quaternion.RotationAxis(AxisPitch, ROD_core.Mathematics.Math_helpers.ToRadians((_pitch)));
             orbitRotation = RotPitch * orbitRotation;
         }
+        public void Revolve(float _yaw, float _pitch)
+        {
+            Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitY, ROD_core.Mathematics.Math_helpers.ToRadians((_yaw)));
+            // apply the rotation around Y on rotation holding the orientation of the camera compared to its original position.
+            revolveRotation = RotYaw * revolveRotation;
+            // determine the local X axis
+            Vector3 AxisPitch = Vector3.TransformCoordinate(Vector3.UnitX, Matrix.RotationQuaternion(revolveRotation));
+            Quaternion RotPitch = Quaternion.RotationAxis(AxisPitch, ROD_core.Mathematics.Math_helpers.ToRadians((_pitch)));
+            revolveRotation = RotPitch * revolveRotation;
+        }
         public void Update()
         {
-            cameraTransformed.eye = Vector3.TransformCoordinate(cameraOrigin.eye, Matrix.RotationQuaternion(orbitRotation));
+
+            cameraTransformed.eye = cameraOrigin.eye + eyeTranslation;
+            cameraTransformed.target = cameraOrigin.target + targetTranslation;
+
+
+            // Doesn't work correctly to associate revolve and orbit. orbit never take account of revolve
+
+            // get the vector between eye and orbit pivot point
+            Vector3 _eye_to_target = cameraTransformed.eye - cameraTransformed.target;
+            // rotate around orbit pivot then get final position by adding orbit pivot vector
+            cameraTransformed.eye = Vector3.TransformCoordinate(_eye_to_target, Matrix.RotationQuaternion(orbitRotation)) + cameraTransformed.target;
+            // get the vector between target and revolve pivot point
+            Vector3 _target_to_eye = cameraTransformed.target - cameraTransformed.eye;
+            // rotate around revolve pivot then get final position by adding revolve pivot vector
+            cameraTransformed.target = Vector3.TransformCoordinate(_target_to_eye, Matrix.RotationQuaternion(revolveRotation)) + cameraTransformed.eye;
             cameraTransformed.up = Vector3.TransformCoordinate(cameraOrigin.up, Matrix.RotationQuaternion(orbitRotation));
         }
         public Matrix GetViewMatrix()
