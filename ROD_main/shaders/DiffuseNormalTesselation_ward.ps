@@ -60,8 +60,8 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
     float LdotN = dot( input.LightDirection, totalNormal );
     float HdotN = dot( half_vector, totalNormal );
 	// roughness between 0.0f and 1.0f
-	//float fRoughness = 0.4f;
-	float fRoughness = 1-roughnessMap.x;
+	float fRoughness = 0.4f;
+	//float fRoughness = 1-roughnessMap.x;
     float r_sq = (fRoughness * fRoughness) + 1e-5f;
     // (Adding a small bias to r_sq stops unexpected
     //  results caused by divide-by-zero)

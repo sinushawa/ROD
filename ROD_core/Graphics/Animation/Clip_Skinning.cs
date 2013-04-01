@@ -5,21 +5,28 @@ using System.Text;
 
 namespace ROD_core.Graphics.Animation
 {
-    public class PoseInterpolation
+    public class Poses
     {
         protected Pose poseA;
         protected Pose poseB;
-        protected float weight;
+    }
+    public struct PoseTime
+    {
+        public TimeSpan startTime;
+        public TimeSpan endTime;
     }
 
     public class Clip_Skinning : Clip
     {
-        public Dictionary<TimeSpan, Pose> animationData;
+        public Dictionary<PoseTime, Poses> animationData;
 
-        public override void Update(long _delta)
+        public override void Update(float _delta)
         {
-            actualLocalTime = actualLocalTime + new TimeSpan(_delta);
-            animationData.FindPreviousItem<KeyValuePair<TimeSpan, Pose>>(x=> x.Key< actualLocalTime).First();
+            actualLocalTime = actualLocalTime + TimeSpan.FromMilliseconds(_delta);
+            KeyValuePair<PoseTime, Poses> poses=animationData.Where(x => x.Key.startTime < actualLocalTime && x.Key.endTime > actualLocalTime).First();
+            TimeSpan duration = poses.Key.endTime - poses.Key.startTime;
+            TimeSpan positionTimeline = actualLocalTime - poses.Key.startTime;
+            float weight = (float)(positionTimeline.TotalMilliseconds/duration.TotalMilliseconds);
         }
     }
 }

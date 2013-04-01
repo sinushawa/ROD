@@ -235,7 +235,7 @@ namespace ROD_engine_DX11
             // While there are no system messages, keep rendering
             while (IsIdle)
             {
-                float time = Stopwatch.ElapsedTicks / (float)Stopwatch.Frequency;
+                float time = Stopwatch.ElapsedMilliseconds;
                 float delta = time - last_time;
                 last_time = time;
                 if (delta < 100)

@@ -236,7 +236,7 @@ namespace ROD_engine_DX11
             camera.Update();
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
-            float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.05f * step);
+            float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.025f * step/1000);
             Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
             lightRotation = rotLight * lightRotation;
             lightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
@@ -261,14 +261,5 @@ namespace ROD_engine_DX11
             TargetView_To_Screen_output();
             sq.Render(DContext);
         }
-        public static Quaternion QuatMultiply(Quaternion left, Quaternion right)
-        {
-            float qX = (left.W * right.X + left.X * right.W + left.Y * right.Z - left.Z * right.Y);
-            float qY = (left.W * right.Y - left.X * right.Z + left.Y * right.W + left.Z * right.X);
-            float qZ = (left.W * right.Z + left.X * right.Y - left.Y * right.X + left.Z * right.W);
-            float qW = (left.W * right.W - left.X * right.X - left.Y * right.Y - left.Z * right.Z);
-            return new Quaternion(qX, qY, qZ, qW);
-        }
-
     }
 }

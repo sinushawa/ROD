@@ -68,8 +68,10 @@
     <Compile Include="Graphics\Animation\Clip_Skinning.cs" />
     <Compile Include="Graphics\Animation\IAnimation.cs" />
     <Compile Include="Graphics\Animation\Clip.cs" />
+    <Compile Include="Graphics\Animation\Joint.cs" />
     <Compile Include="Graphics\Animation\Pose.cs" />
     <Compile Include="Graphics\Animation\Sequence.cs" />
+    <Compile Include="Graphics\Assets\Skeleton.cs" />
     <Compile Include="LinqExtension.cs" />
     <Compile Include="Mathematics\Math_helpers.cs" />
     <Compile Include="RenderToTexture\RenderTexture.cs" />

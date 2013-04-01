@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX;
+using ROD_core.Graphics.Animation;
 
-namespace ROD_core.Graphics.Animation
+namespace ROD_core.Graphics.Assets
 {
-    public class Pose
+    public class Skeleton
     {
         public string name;
-        public Dictionary<int, Quaternion> localJoints;
+        public Joint root;
     }
 }

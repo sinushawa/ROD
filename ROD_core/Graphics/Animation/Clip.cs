@@ -98,6 +98,6 @@ namespace ROD_core.Graphics.Animation
             }
         }
 
-        public abstract void Update(long _delta);
+        public abstract void Update(float _delta);
     }
 }
