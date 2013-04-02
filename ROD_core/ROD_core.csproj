@@ -36,21 +36,17 @@
     <OutputPath>bin\test\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\..\C# ressources\SharpDX\DEV 2.5\Bin\Standard-net40\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.D3DCompiler.dll</HintPath>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\..\C# ressources\SharpDX\DEV 2.5\Bin\Standard-net40\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\..\C# ressources\SharpDX\DEV 2.5\Bin\Standard-net40\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C# ressources\SharpDXDev\Bin\Standard-net40\SharpDX.DXGI.dll</HintPath>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\..\C# ressources\SharpDX\DEV 2.5\Bin\Standard-net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -73,6 +69,7 @@
     <Compile Include="Graphics\Animation\Sequence.cs" />
     <Compile Include="Graphics\Assets\Skeleton.cs" />
     <Compile Include="LinqExtension.cs" />
+    <Compile Include="Mathematics\DualQuaternion.cs" />
     <Compile Include="Mathematics\Math_helpers.cs" />
     <Compile Include="RenderToTexture\RenderTexture.cs" />
     <Compile Include="Constant_buffer_structures.cs" />
