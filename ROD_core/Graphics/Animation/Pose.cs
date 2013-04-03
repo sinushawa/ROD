@@ -9,6 +9,6 @@ namespace ROD_core.Graphics.Animation
     public class Pose
     {
         public string name;
-        public Dictionary<int, Quaternion> localJoints;
+        public Dictionary<int, ROD_core.Mathematics.DualQuaternion> localJoints;
     }
 }

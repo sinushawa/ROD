@@ -124,15 +124,6 @@ namespace ROD_core
         Quad_rendering = (1 << 13)
     }
 
-
-    public enum ShaderType
-    {
-        VertexShader,
-        HullShader,
-        DomainShader,
-        PixelShader
-    }
-
     static public class ShaderBinding
     {
         static public Dictionary<Technique, ShaderSolution> ShaderPool = new Dictionary<Technique, ShaderSolution>();

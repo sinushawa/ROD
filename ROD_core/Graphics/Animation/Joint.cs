@@ -15,7 +15,6 @@ namespace ROD_core.Graphics.Animation
 
         // this would be the original position of the joint before transformation.
         public Vector3 position;
-        public Quaternion localRotation;
-        public Matrix globalTransformation;
+        public ROD_core.Mathematics.DualQuaternion localRotationTranslation;
     }
 }

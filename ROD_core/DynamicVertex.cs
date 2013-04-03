@@ -69,7 +69,7 @@ namespace ROD_core
 		COLOR = (1 << 4),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32_Float, typeof(Vector3))]
 		BINORMAL = (1 << 5),
-		[SemanticAttribute(SharpDX.DXGI.Format.R8G8B8A8_UInt, typeof(UInt32[]))]
+        [SemanticAttribute(SharpDX.DXGI.Format.R8G8B8A8_UInt, typeof(BoneIndices))]
 		BLENDINDICES = (1 << 6),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32A32_Float, typeof(Vector4))]
 		BLENDWEIGHT = (1 << 7),
