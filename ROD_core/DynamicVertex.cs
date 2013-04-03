@@ -9,6 +9,7 @@ using SharpDX.Direct3D11;
 using SharpDX.D3DCompiler;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
@@ -271,7 +272,7 @@ namespace ROD_core
 			}
 			return listInputElements.ToArray<InputElement>();
 		}
-        public static int SizeOf(this Type type)
+        public static int SizeOfG(this Type type)
         {
             // Get the generic type definition
             MethodInfo method = typeof(SharpDX.Utilities).GetMethods(BindingFlags.Static | BindingFlags.Public).Where<MethodInfo>(m => m.IsGenericMethod && m.Name == "SizeOf").FirstOrDefault();
@@ -279,6 +280,17 @@ namespace ROD_core
             method = method.MakeGenericMethod(type);
             int valeure = (int)method.Invoke(null, new object[] { });
             return valeure;
+        }
+        public static int SizeOf(this Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Marshal.SizeOf(type);
+            }
+            else
+            {
+                return type.SizeOfG();
+            }
         }
 	}
 }

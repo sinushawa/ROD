@@ -58,7 +58,7 @@ namespace ROD_core
         {
             dataStream.Position = 0;
             list = (IList)Activator.CreateInstance((typeof(List<>).MakeGenericType(vertexType)));
-            var val = vertexType.SizeOf();
+            int val = vertexType.SizeOf();
             while (dataStream.Position < dataStream.Length)
             {
                 var tip = readMethod.Invoke(dataStream, new object[] { });
