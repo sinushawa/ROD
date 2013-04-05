@@ -99,11 +99,13 @@ namespace ROD_core.Graphics.Assets
             for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.VertexShader].Length; i++)
             {
                 context.VertexShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.VertexShader][i]);
+                context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.VertexShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.VertexShader][i]);
             }
             context.PixelShader.Set(_shaderSolution.ps);
             for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.PixelShader].Length; i++)
             {
                 context.PixelShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.PixelShader][i]);
+                context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.PixelShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.PixelShader][i]);
             }
             if (this.isTesselated)
             {
@@ -111,14 +113,16 @@ namespace ROD_core.Graphics.Assets
                 for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.HullShader].Length; i++)
                 {
                     context.HullShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.HullShader][i]);
+                    context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.HullShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.HullShader][i]);
                 }
                 context.DomainShader.Set(_shaderSolution.ds);
                 for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.DomainShader].Length; i++)
                 {
                     context.DomainShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.DomainShader][i]);
+                    context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.DomainShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.DomainShader][i]);
                 }
 
-                context.UpdateSubresource(ref vsBuffer, _shaderSolution.shaders_buffers[Shaders.DomainShader][0]);
+                //context.UpdateSubresource(ref vsBuffer, _shaderSolution.shaders_buffers[Shaders.DomainShader][0]);
             }
             else
             {
@@ -130,7 +134,7 @@ namespace ROD_core.Graphics.Assets
                 context.PixelShader.SetShaderResource(i, material.textures[i]);
             }
 
-            context.UpdateSubresource(ref vsBuffer, _shaderSolution.shaders_buffers[Shaders.VertexShader][0]);
+            //context.UpdateSubresource(ref vsBuffer, _shaderSolution.shaders_buffers[Shaders.VertexShader][0]);
 
             // !!!!!!!!!!!!!!!!!!!!!!! not normal (be careful of shader being optimized and stripped of unused constant buffer)
             //context.UpdateSubresource(ref psBuffer, _shaderSolution.shaders_buffers[Shaders.PixelShader][0]);

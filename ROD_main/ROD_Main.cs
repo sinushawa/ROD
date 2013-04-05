@@ -45,18 +45,22 @@ namespace ROD_engine_DX11
         private ROD_core.Scene scene;
         private ROD_core.RenderToTexture.RenderTexture render_texture;
         private ROD_core.RenderToTexture.ScreenQuad sq;
+        private ROD_core.ConstantPack ConstantVs;
 
-        public ROD_core.Camera camera;
+        public ROD_core.Camera camera = new ROD_core.Camera(Vector3.Zero, Vector3.Zero);
 
         public ROD_Main() : base("FrameDX", 1280, 800, true, false, true)
         {
             #region HLSL definition
 
+            ConstantVs = new ROD_core.ConstantPack();
+            
+
             //Shader for diffuse texture, normal texture and bump with tesselation
             ROD_core.ByteCodeBind[] ShadersByteCodeDNT = new ROD_core.ByteCodeBind[]{
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.vs", "VS", "vs_5_0",ShaderFlags.Debug)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.vs", "VS", "vs_5_0",ShaderFlags.Debug), ConstantVs),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.HullShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.hs", "HS", "hs_5_0",ShaderFlags.Debug)),
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug), ConstantVs),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation_ward.ps", "PS", "ps_5_0",ShaderFlags.Debug))
             };
             ROD_core.ShaderSolution ShSolutionDNT = new ROD_core.ShaderSolution("DNS_Tes", Device, ShadersByteCodeDNT);
@@ -164,6 +168,10 @@ namespace ROD_engine_DX11
             lightRotation = Quaternion.Identity;
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
+            ConstantVs.Add(world);
+            ConstantVs.Add(viewproj);
+            ConstantVs.Add(camera.cameraTransformed.eye);
+            ConstantVs.Add(lightPos);
         }
 
         public override void Dispose()
@@ -240,10 +248,12 @@ namespace ROD_engine_DX11
             Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
             lightRotation = rotLight * lightRotation;
             lightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
+            ConstantVs.Update<Matrix>(viewproj, 1);
         }
 
         protected override void Render(float time, float step)
         {
+            
             ROD_core.vsBuffer vsBuffer = new ROD_core.vsBuffer();
             vsBuffer.padding3 = 0;
             vsBuffer.padding1 = 0;
@@ -251,15 +261,26 @@ namespace ROD_engine_DX11
             vsBuffer.ViewProjection = viewproj;
             vsBuffer.eyePos = camera.cameraTransformed.eye;
             vsBuffer.LightPos = lightPos;
+
             ROD_core.psBuffer psBuffer = new ROD_core.psBuffer();
             psBuffer.LightColor = lightColor;
-            render_texture.SetRenderTarget(DContext, DepthStencilView);
+            //render_texture.SetRenderTarget(DContext, DepthStencilView);
+
+            // Bind the render target view and depth stencil buffer to the output pipeline.
+            DContext.OutputMerger.SetTargets(DepthStencilView, RenderTargetView);
+            // Setup the color the buffer to.
+            var color = new Color4(0.0f, 0.0f, 1.0f, 1.0f);
+            // Clear the render to texture buffer.
+            DContext.ClearRenderTargetView(RenderTargetView, color);
+            // Clear the depth buffer.
+            DContext.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
+
             scene.Render(DContext, vsBuffer, psBuffer);
             //render_texture.SaveToFile(DContext, @"C:\test\test.jpg");
             
             
             TargetView_To_Screen_output();
-            sq.Render(DContext);
+            //sq.Render(DContext);
         }
     }
 }

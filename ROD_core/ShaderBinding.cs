@@ -25,11 +25,23 @@ namespace ROD_core
     {
         public Shaders shaderType;
         public ShaderBytecode byteCode;
+        public List<ConstantPack> constants;
 
-        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode)
+        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode) : this(_shaderType, _byteCode, new List<ConstantPack>())
+        {
+        }
+        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode, ConstantPack _constant)
         {
             shaderType = _shaderType;
             byteCode = _byteCode;
+            constants = new List<ConstantPack>();
+            constants.Add(_constant);
+        }
+        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode, List<ConstantPack> _constants)
+        {
+            shaderType = _shaderType;
+            byteCode = _byteCode;
+            constants = _constants;
         }
     }
     public struct BufferBound
@@ -49,6 +61,7 @@ namespace ROD_core
         public string name;
         public Dictionary<Shaders, ShaderBytecode> shaders_bytecode;
         public Dictionary<Shaders, SharpDX.Direct3D11.Buffer[]> shaders_buffers;
+        public Dictionary<Shaders, List<ConstantPack>> shaders_constants;
         public VertexShader vs;
         public HullShader hs;
         public DomainShader ds;
@@ -61,12 +74,13 @@ namespace ROD_core
         {
             shaders_bytecode = new Dictionary<Shaders, ShaderBytecode>();
             shaders_buffers = new Dictionary<Shaders, SharpDX.Direct3D11.Buffer[]>();
+            shaders_constants = new Dictionary<Shaders, List<ConstantPack>>();
             //shaders_bound_values = new Dictionary<Shaders, NonNullable<SharpDX.DataStream>[]>();
             name = _name;
             for (int i = 0; i < _shaders_bytecode.Length; i++)
             {
                 shaders_bytecode.Add(_shaders_bytecode[i].shaderType, _shaders_bytecode[i].byteCode);
-
+                shaders_constants.Add(_shaders_bytecode[i].shaderType, _shaders_bytecode[i].constants);
                 switch (_shaders_bytecode[i].shaderType)
                 {
                     case Shaders.VertexShader:

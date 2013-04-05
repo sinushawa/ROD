@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -57,8 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic_structures\Vertex_POS_TEX.cs" />
+    <Compile Include="ConstantBuilder.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="DynamicConstantStruct.cs" />
     <Compile Include="Graphics\Animation\AnimationManager.cs" />
     <Compile Include="Graphics\Animation\AnimationTrack.cs" />
     <Compile Include="Graphics\Animation\AnimationType.cs" />
@@ -74,7 +75,6 @@
     <Compile Include="Mathematics\Math_helpers.cs" />
     <Compile Include="RenderToTexture\RenderTexture.cs" />
     <Compile Include="Constant_buffer_structures.cs" />
-    <Compile Include="NonNullable.cs" />
     <Compile Include="EnumExtension.cs" />
     <Compile Include="IndexStream.cs" />
     <Compile Include="Graphics\Assets\Material.cs" />
