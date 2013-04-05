@@ -47,7 +47,7 @@ namespace ROD_engine_DX11
         private ROD_core.RenderToTexture.ScreenQuad sq;
         private ROD_core.ConstantPack ConstantVs;
 
-        public ROD_core.Camera camera = new ROD_core.Camera(Vector3.Zero, Vector3.Zero);
+        public ROD_core.Camera camera;
 
         public ROD_Main() : base("FrameDX", 1280, 800, true, false, true)
         {

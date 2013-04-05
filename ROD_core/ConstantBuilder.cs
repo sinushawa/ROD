@@ -27,29 +27,30 @@ namespace ROD_core
     }
     public class ConstantPack
     {
-        private List<ConstantVariable> pack;
+        private List<KeyValuePair<string, ConstantVariable>> pack;
 
-        public ConstantPack() : this(new List<ConstantVariable>())
+        public ConstantPack() : this(new List<KeyValuePair<string, ConstantVariable>>())
         {
         }
-        public ConstantPack(List<ConstantVariable> _pack)
+        public ConstantPack(List<KeyValuePair<string, ConstantVariable>> _pack)
         {
             pack = _pack;
         }
-        public void Add<TStruct>(TStruct value) where TStruct : struct
+        public void Add<TStruct>(string name, TStruct value) where TStruct : struct
         {
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
-            pack.Add(_constant);
+            pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
-        public void Update<TStruct>(TStruct value, int index) where TStruct : struct
+        public void Update<TStruct>(string name, TStruct value) where TStruct : struct
         {
-            pack.RemoveAt(index);
+            int id = pack.Select((item, index) => new { itemname = item.Key, itemIndex = index }).Where(x => x.itemname == name).First().itemIndex;
+            pack.RemoveAt(id);
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
-            pack.Insert(index, _constant);
+            pack.Insert(id, new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
-        public void Add(ConstantVariable _constant)
+        public void Add(string name, ConstantVariable _constant)
         {
-            pack.Add(_constant);
+            pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
 
         // 16-byte boundary packing
@@ -59,7 +60,7 @@ namespace ROD_core
             int count = 0;
             for (int i=0; i<pack.Count; i++)
             {
-                byte[] temp = pack[i].GetByte();
+                byte[] temp = pack[i].Value.GetByte();
                 listbyte.AddRange(temp);
                 count += temp.Length;
                 if( (count % 16) != 0 )
@@ -67,7 +68,7 @@ namespace ROD_core
                     int restant = (int)Math.Ceiling(count / (double)16)*16 - count;
                     if (i + 1 < pack.Count)
                     {
-                        byte[] next = pack[i + 1].GetByte();
+                        byte[] next = pack[i + 1].Value.GetByte();
                         if (next.Length > restant)
                         {
                             while (restant > 0)

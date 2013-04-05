@@ -75,7 +75,6 @@ namespace ROD_core
             shaders_bytecode = new Dictionary<Shaders, ShaderBytecode>();
             shaders_buffers = new Dictionary<Shaders, SharpDX.Direct3D11.Buffer[]>();
             shaders_constants = new Dictionary<Shaders, List<ConstantPack>>();
-            //shaders_bound_values = new Dictionary<Shaders, NonNullable<SharpDX.DataStream>[]>();
             name = _name;
             for (int i = 0; i < _shaders_bytecode.Length; i++)
             {
@@ -85,6 +84,8 @@ namespace ROD_core
                 {
                     case Shaders.VertexShader:
                         vs = new VertexShader(Device, _shaders_bytecode[i].byteCode);
+                        ShaderReflection _shaderReflection = new ShaderReflection(_shaders_bytecode[i].byteCode);
+                        shaderRef.
                         break;
                     case Shaders.HullShader:
                         hs = new HullShader(Device, _shaders_bytecode[i].byteCode);
@@ -100,6 +101,18 @@ namespace ROD_core
                         break;
                     default:
                         break;
+                }
+            }
+        }
+
+        private void BuildConstantFromShaderByteCode(ShaderReflection _shaderReflection)
+        {
+            int buffers_count = _shaderReflection.Description.ConstantBuffers;
+            for (int i = 0; i < buffers_count; i++)
+            {
+                int variables_count = _shaderReflection.GetConstantBuffer(i).Description.VariableCount;
+                for (int j = 0; j < variables_count; j++)
+                {
                 }
             }
         }
