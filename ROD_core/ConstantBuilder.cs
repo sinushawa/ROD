@@ -9,14 +9,19 @@ namespace ROD_core
 {
     public abstract class ConstantVariable
     {
+        public abstract event UpdatedConstantEventHandler Updated;
+
         public abstract byte[] GetByte();
         public abstract void Update(ref object _data);
     }
 
+    public delegate void UpdatedConstantEventHandler(object sender, EventArgs e);
+
     public class Constant_Variable<DataType> : ConstantVariable where DataType : struct
     {
+        public override event UpdatedConstantEventHandler Updated;
+
         public DataType mDataType;
-        private Type dataType;
 
         public Constant_Variable(ref DataType value)
         {
@@ -29,6 +34,7 @@ namespace ROD_core
                 throw new NotImplementedException();
             }
             mDataType = (DataType)_data;
+            Updated(this, null);
         }
         public override byte[] GetByte()
         {
@@ -49,6 +55,7 @@ namespace ROD_core
         {
             ShaderBinding.VariablesPool[this].Add(name);
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
+            _constant.Updated += new UpdatedConstantEventHandler(HandleConstantUpdate);
             pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
         public void Add(KeyValuePair<string, ConstantVariable> _keyPair)
@@ -59,14 +66,21 @@ namespace ROD_core
         public void Add(string name, ConstantVariable _constant)
         {
             ShaderBinding.VariablesPool[this].Add(name);
+            _constant.Updated += new UpdatedConstantEventHandler(HandleConstantUpdate);
             pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
+        public void HandleConstantUpdate(object sender, EventArgs e)
+        {
+            ShaderBinding.FlagConstants(this);
+        }
+
         public void Update<TStruct>(string name, TStruct value) where TStruct : struct
         {
             int id = pack.Select((item, index) => new { itemname = item.Key, itemIndex = index }).Where(x => x.itemname == name).First().itemIndex;
             pack.RemoveAt(id);
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
             pack.Insert(id, new KeyValuePair<string, ConstantVariable>(name, _constant));
+            ShaderBinding.FlagConstants(this);
         }
 
         // 16-byte boundary packing

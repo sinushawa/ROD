@@ -48,7 +48,7 @@ namespace ROD_engine_DX11
 
         public ROD_core.Camera camera;
 
-        public ROD_Main() : base("FrameDX", 1280, 800, true, false, true)
+        public ROD_Main() : base("FrameDX", 1280, 800, true, false, false)
         {
             #region HLSL definition          
 
@@ -258,7 +258,10 @@ namespace ROD_engine_DX11
 
             object sent = ((object)viewproj);
             ROD_core.ShaderBinding.ConstantsPool["ViewProjection"].Update(ref sent);
-            ROD_core.ShaderBinding.UpdateConstants("ViewProjection");
+            object sentlp = ((object)lightPos);
+            ROD_core.ShaderBinding.ConstantsPool["LightPos"].Update(ref sentlp);
+            ROD_core.ShaderBinding.UpdateFlaggedConstants();
+            //ROD_core.ShaderBinding.UpdateConstants("ViewProjection");
         }
 
         protected override void Render(float time, float step)

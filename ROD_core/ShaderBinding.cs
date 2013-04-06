@@ -185,6 +185,7 @@ namespace ROD_core
         static public Dictionary<Technique, ShaderSolution> ShaderPool = new Dictionary<Technique, ShaderSolution>();
         static public Dictionary<string, ConstantVariable> ConstantsPool = new Dictionary<string, ConstantVariable>();
         static public Dictionary<ConstantPack, List<string>> VariablesPool = new Dictionary<ConstantPack, List<string>>();
+        static public List<ConstantPack> FlaggedPool = new List<ConstantPack>();
 
         static public ShaderSolution GetCompatibleShader(Model _model)
         {
@@ -228,8 +229,9 @@ namespace ROD_core
                 shS.BuildConstantForShaderByteCode();
             }
         }
-
-        static public void UpdateConstants()
+        /// <summary>Recalculate All constants
+        /// </summary> 
+        static public void UpdateAllConstants()
         {
             List<ShaderSolution> shaderSolutions = ShaderPool.Select(x => x.Value).ToList();
             foreach (ShaderSolution shS in shaderSolutions)
@@ -237,10 +239,37 @@ namespace ROD_core
                 shS.UpdateConstantCache();
             }
         }
+        /// <summary>Recalculate constants containg variable
+        /// </summary> 
         static public void UpdateConstants(string variableName)
         {
             List<ConstantPack> constantPacks = VariablesPool.Where(x => x.Value.Any(na=> na == variableName)).Select(y => y.Key).ToList();
             foreach (ConstantPack constantPack in constantPacks)
+            {
+                constantPack.CacheBytes();
+            }
+        }
+        /// <summary>Flag Constants containing this variable to be recaculated on UpdateFlaggedConstants
+        /// <para>Use only to force the calculation of a variable which hasn't been manually updated as they are automatically flagged</para>
+        /// </summary> 
+        static public void FlagConstants(string variableName)
+        {
+            List<ConstantPack> constantPacks = VariablesPool.Where(x => x.Value.Any(na => na == variableName)).Select(y => y.Key).ToList();
+            FlaggedPool.AddRange(constantPacks);
+            FlaggedPool=FlaggedPool.Distinct().ToList();
+        }
+        /// <summary>Force a Constant to be recalculated even if it's value didn't change
+        /// </summary> 
+        static public void FlagConstants(ConstantPack constantPack)
+        {
+            FlaggedPool.Add(constantPack);
+            FlaggedPool = FlaggedPool.Distinct().ToList();
+        }
+        /// <summary>Update all constants containing Updated variables
+        /// </summary> 
+        static public void UpdateFlaggedConstants()
+        {
+            foreach (ConstantPack constantPack in FlaggedPool)
             {
                 constantPack.CacheBytes();
             }
