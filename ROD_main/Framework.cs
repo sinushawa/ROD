@@ -238,10 +238,12 @@ namespace ROD_engine_DX11
                 float time = Stopwatch.ElapsedMilliseconds;
                 float delta = time - last_time;
                 last_time = time;
+                /*                      // not needed Vsync already limit the speed
                 if (delta < 100)
                 {
                     Thread.Sleep(10);
                 }
+                 * */
                 MouseUpdate(time, delta);
                 KeyboardUpdate(time, delta);
                 Update(time, delta);

@@ -32,11 +32,11 @@ namespace ROD_core
             }
         }
 
-        public void Render(DeviceContext context, vsBuffer vsBuffer, psBuffer psBuffer)
+        public void Render(DeviceContext context)
         {
             foreach (Model model in models)
             {
-                model.Render(context, vsBuffer, psBuffer);
+                model.Render(context);
             }
         }
     }

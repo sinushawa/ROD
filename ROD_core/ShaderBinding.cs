@@ -25,23 +25,11 @@ namespace ROD_core
     {
         public Shaders shaderType;
         public ShaderBytecode byteCode;
-        public List<ConstantPack> constants;
 
-        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode) : this(_shaderType, _byteCode, new List<ConstantPack>())
-        {
-        }
-        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode, ConstantPack _constant)
+        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode)
         {
             shaderType = _shaderType;
             byteCode = _byteCode;
-            constants = new List<ConstantPack>();
-            constants.Add(_constant);
-        }
-        public ByteCodeBind(Shaders _shaderType, ShaderBytecode _byteCode, List<ConstantPack> _constants)
-        {
-            shaderType = _shaderType;
-            byteCode = _byteCode;
-            constants = _constants;
         }
     }
     public struct BufferBound
@@ -79,13 +67,10 @@ namespace ROD_core
             for (int i = 0; i < _shaders_bytecode.Length; i++)
             {
                 shaders_bytecode.Add(_shaders_bytecode[i].shaderType, _shaders_bytecode[i].byteCode);
-                shaders_constants.Add(_shaders_bytecode[i].shaderType, _shaders_bytecode[i].constants);
                 switch (_shaders_bytecode[i].shaderType)
                 {
                     case Shaders.VertexShader:
                         vs = new VertexShader(Device, _shaders_bytecode[i].byteCode);
-                        ShaderReflection _shaderReflection = new ShaderReflection(_shaders_bytecode[i].byteCode);
-                        shaderRef.
                         break;
                     case Shaders.HullShader:
                         hs = new HullShader(Device, _shaders_bytecode[i].byteCode);
@@ -104,15 +89,59 @@ namespace ROD_core
                 }
             }
         }
-
-        private void BuildConstantFromShaderByteCode(ShaderReflection _shaderReflection)
+        public void BuildConstantBuffers(Device device)
         {
-            int buffers_count = _shaderReflection.Description.ConstantBuffers;
-            for (int i = 0; i < buffers_count; i++)
+            List<Shaders> actual_shaders = (from sh in shaders_bytecode select sh.Key).ToList<Shaders>();
+            foreach (Shaders sh in actual_shaders)
             {
-                int variables_count = _shaderReflection.GetConstantBuffer(i).Description.VariableCount;
-                for (int j = 0; j < variables_count; j++)
+                ShaderReflection _shaderReflection = new ShaderReflection(shaders_bytecode[sh]);
+                int buffers_count = _shaderReflection.Description.ConstantBuffers;
+                SharpDX.Direct3D11.Buffer[] _buffers = new SharpDX.Direct3D11.Buffer[buffers_count];
+                for (int i = 0; i < buffers_count; i++)
                 {
+                    ConstantBuffer cb_buffer = _shaderReflection.GetConstantBuffer(i);
+                    _buffers[i] = new SharpDX.Direct3D11.Buffer(device, cb_buffer.Description.Size, ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+                }
+                shaders_buffers[sh] = _buffers;
+            }
+        }
+
+        public void BuildConstantForShaderByteCode()
+        {
+            List<Shaders> actual_shaders = (from sh in shaders_bytecode select sh.Key).ToList<Shaders>();
+            foreach (Shaders sh in actual_shaders)
+            {
+                List<ConstantPack> shaderConstants = new List<ConstantPack>();
+                ShaderReflection _shaderReflection = new ShaderReflection(shaders_bytecode[sh]);
+                int buffers_count = _shaderReflection.Description.ConstantBuffers;
+                for (int i = 0; i < buffers_count; i++)
+                {
+                    ConstantPack constantPack = new ConstantPack();
+                    int variables_count = _shaderReflection.GetConstantBuffer(i).Description.VariableCount;
+                    for (int j = 0; j < variables_count; j++)
+                    {
+                        string _name = _shaderReflection.GetConstantBuffer(i).GetVariable(j).Description.Name;
+                        int _size = _shaderReflection.GetConstantBuffer(i).GetVariable(j).Description.Size;
+                        if (!_name.StartsWith("padding"))
+                        {
+                            constantPack.Add(ShaderBinding.ConstantsPool.Where(x => x.Key == _name).First());
+                        }
+                    }
+                    shaderConstants.Add(constantPack);
+                }
+                shaders_constants[sh]=shaderConstants;
+            }
+        }
+
+        public void UpdateConstantCache()
+        {
+            List<Shaders> actual_shaders = (from sh in shaders_bytecode select sh.Key).ToList<Shaders>();
+            foreach (Shaders sh in actual_shaders)
+            {
+                List<byte[]> shaderConstantsBytes = new List<byte[]>();
+                foreach (ConstantPack pack in shaders_constants[sh])
+                {
+                    pack.CacheBytes();
                 }
             }
         }
@@ -154,6 +183,8 @@ namespace ROD_core
     static public class ShaderBinding
     {
         static public Dictionary<Technique, ShaderSolution> ShaderPool = new Dictionary<Technique, ShaderSolution>();
+        static public Dictionary<string, ConstantVariable> ConstantsPool = new Dictionary<string, ConstantVariable>();
+        static public Dictionary<ConstantPack, List<string>> VariablesPool = new Dictionary<ConstantPack, List<string>>();
 
         static public ShaderSolution GetCompatibleShader(Model _model)
         {
@@ -180,6 +211,39 @@ namespace ROD_core
                 _solution = ShaderPool[necessaryTechnique];
             }
             return _solution;
+        }
+        static public void BuildBuffers(Device device)
+        {
+            List<ShaderSolution> shaderSolutions = ShaderPool.Select(x => x.Value).ToList();
+            foreach (ShaderSolution shS in shaderSolutions)
+            {
+                shS.BuildConstantBuffers(device);
+            }
+        }
+        static public void InitConstants()
+        {
+            List<ShaderSolution> shaderSolutions = ShaderPool.Select(x => x.Value).ToList();
+            foreach (ShaderSolution shS in shaderSolutions)
+            {
+                shS.BuildConstantForShaderByteCode();
+            }
+        }
+
+        static public void UpdateConstants()
+        {
+            List<ShaderSolution> shaderSolutions = ShaderPool.Select(x => x.Value).ToList();
+            foreach (ShaderSolution shS in shaderSolutions)
+            {
+                shS.UpdateConstantCache();
+            }
+        }
+        static public void UpdateConstants(string variableName)
+        {
+            List<ConstantPack> constantPacks = VariablesPool.Where(x => x.Value.Any(na=> na == variableName)).Select(y => y.Key).ToList();
+            foreach (ConstantPack constantPack in constantPacks)
+            {
+                constantPack.CacheBytes();
+            }
         }
     }
 }

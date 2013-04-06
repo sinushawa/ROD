@@ -10,15 +10,25 @@ namespace ROD_core
     public abstract class ConstantVariable
     {
         public abstract byte[] GetByte();
+        public abstract void Update(ref object _data);
     }
 
     public class Constant_Variable<DataType> : ConstantVariable where DataType : struct
     {
         public DataType mDataType;
+        private Type dataType;
 
         public Constant_Variable(ref DataType value)
         {
             mDataType = value;
+        }
+        public override void Update(ref object _data)
+        {
+            if (!(_data is DataType)) 
+            {
+                throw new NotImplementedException();
+            }
+            mDataType = (DataType)_data;
         }
         public override byte[] GetByte()
         {
@@ -28,17 +38,27 @@ namespace ROD_core
     public class ConstantPack
     {
         private List<KeyValuePair<string, ConstantVariable>> pack;
+        public byte[] cache;
 
-        public ConstantPack() : this(new List<KeyValuePair<string, ConstantVariable>>())
+        public ConstantPack()
         {
-        }
-        public ConstantPack(List<KeyValuePair<string, ConstantVariable>> _pack)
-        {
-            pack = _pack;
+            ShaderBinding.VariablesPool.Add(this, new List<string>());
+            pack = new List<KeyValuePair<string, ConstantVariable>>();
         }
         public void Add<TStruct>(string name, TStruct value) where TStruct : struct
         {
+            ShaderBinding.VariablesPool[this].Add(name);
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
+            pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
+        }
+        public void Add(KeyValuePair<string, ConstantVariable> _keyPair)
+        {
+            ShaderBinding.VariablesPool[this].Add(_keyPair.Key);
+            Add(_keyPair.Key, _keyPair.Value);
+        }
+        public void Add(string name, ConstantVariable _constant)
+        {
+            ShaderBinding.VariablesPool[this].Add(name);
             pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
         public void Update<TStruct>(string name, TStruct value) where TStruct : struct
@@ -48,13 +68,9 @@ namespace ROD_core
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
             pack.Insert(id, new KeyValuePair<string, ConstantVariable>(name, _constant));
         }
-        public void Add(string name, ConstantVariable _constant)
-        {
-            pack.Add(new KeyValuePair<string, ConstantVariable>(name, _constant));
-        }
 
         // 16-byte boundary packing
-        public byte[] GetPackedBytes()
+        public void CacheBytes()
         {
             List<byte> listbyte = new List<byte>();
             int count = 0;
@@ -91,7 +107,7 @@ namespace ROD_core
                 }
 
             }
-            return listbyte.ToArray();
+            cache = listbyte.ToArray();
         }
     }
 

@@ -45,22 +45,18 @@ namespace ROD_engine_DX11
         private ROD_core.Scene scene;
         private ROD_core.RenderToTexture.RenderTexture render_texture;
         private ROD_core.RenderToTexture.ScreenQuad sq;
-        private ROD_core.ConstantPack ConstantVs;
 
         public ROD_core.Camera camera;
 
         public ROD_Main() : base("FrameDX", 1280, 800, true, false, true)
         {
-            #region HLSL definition
-
-            ConstantVs = new ROD_core.ConstantPack();
-            
+            #region HLSL definition          
 
             //Shader for diffuse texture, normal texture and bump with tesselation
             ROD_core.ByteCodeBind[] ShadersByteCodeDNT = new ROD_core.ByteCodeBind[]{
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.vs", "VS", "vs_5_0",ShaderFlags.Debug), ConstantVs),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.vs", "VS", "vs_5_0",ShaderFlags.Debug)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.HullShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.hs", "HS", "hs_5_0",ShaderFlags.Debug)),
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug), ConstantVs),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation_ward.ps", "PS", "ps_5_0",ShaderFlags.Debug))
             };
             ROD_core.ShaderSolution ShSolutionDNT = new ROD_core.ShaderSolution("DNS_Tes", Device, ShadersByteCodeDNT);
@@ -89,11 +85,12 @@ namespace ROD_engine_DX11
             ROD_core.Technique SQ = ROD_core.Technique.Quad_rendering;
 
             ROD_core.ShaderBinding.ShaderPool.Add(SQ, ShSolutionSQ);
-
+            SetEnvironnement();
+            SetShaders();
             InitializeScene();
             scene.Prep(Device);
             
-            SetEnvironnement();
+            
 
             #endregion
         }
@@ -168,10 +165,19 @@ namespace ROD_engine_DX11
             lightRotation = Quaternion.Identity;
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
-            ConstantVs.Add(world);
-            ConstantVs.Add(viewproj);
-            ConstantVs.Add(camera.cameraTransformed.eye);
-            ConstantVs.Add(lightPos);
+
+            
+        }
+        private void SetShaders()
+        {
+            ROD_core.ShaderBinding.ConstantsPool.Add("World", new ROD_core.Constant_Variable<Matrix>(ref world));
+            ROD_core.ShaderBinding.ConstantsPool.Add("ViewProjection", new ROD_core.Constant_Variable<Matrix>(ref viewproj));
+            ROD_core.ShaderBinding.ConstantsPool.Add("eyePos", new ROD_core.Constant_Variable<Vector3>(ref camera.cameraTransformed.eye));
+            ROD_core.ShaderBinding.ConstantsPool.Add("LightPos", new ROD_core.Constant_Variable<Vector3>(ref lightPos));
+            ROD_core.ShaderBinding.ConstantsPool.Add("LightColor", new ROD_core.Constant_Variable<Vector4>(ref lightColor));
+
+            ROD_core.ShaderBinding.BuildBuffers(Device);
+            ROD_core.ShaderBinding.InitConstants();
         }
 
         public override void Dispose()
@@ -241,6 +247,7 @@ namespace ROD_engine_DX11
 
         protected override void Update(float time, float step)
         {
+            Debug.WriteLine(time);
             camera.Update();
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
@@ -248,22 +255,14 @@ namespace ROD_engine_DX11
             Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
             lightRotation = rotLight * lightRotation;
             lightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
-            ConstantVs.Update<Matrix>(viewproj, 1);
+
+            object sent = ((object)viewproj);
+            ROD_core.ShaderBinding.ConstantsPool["ViewProjection"].Update(ref sent);
+            ROD_core.ShaderBinding.UpdateConstants("ViewProjection");
         }
 
         protected override void Render(float time, float step)
         {
-            
-            ROD_core.vsBuffer vsBuffer = new ROD_core.vsBuffer();
-            vsBuffer.padding3 = 0;
-            vsBuffer.padding1 = 0;
-            vsBuffer.World = world;
-            vsBuffer.ViewProjection = viewproj;
-            vsBuffer.eyePos = camera.cameraTransformed.eye;
-            vsBuffer.LightPos = lightPos;
-
-            ROD_core.psBuffer psBuffer = new ROD_core.psBuffer();
-            psBuffer.LightColor = lightColor;
             //render_texture.SetRenderTarget(DContext, DepthStencilView);
 
             // Bind the render target view and depth stencil buffer to the output pipeline.
@@ -275,7 +274,7 @@ namespace ROD_engine_DX11
             // Clear the depth buffer.
             DContext.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
 
-            scene.Render(DContext, vsBuffer, psBuffer);
+            scene.Render(DContext);
             //render_texture.SaveToFile(DContext, @"C:\test\test.jpg");
             
             

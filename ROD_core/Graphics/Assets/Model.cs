@@ -66,23 +66,9 @@ namespace ROD_core.Graphics.Assets
                 MinimumLod = -float.MaxValue,
                 MaximumLod = float.MaxValue
             });
-
-            List<Shaders> actual_shaders = (from sh in _shaderSolution.shaders_bytecode select sh.Key).ToList<Shaders>();
-            foreach (Shaders sh in actual_shaders)
-            {
-                ShaderReflection _shaderReflection = new ShaderReflection(_shaderSolution.shaders_bytecode[sh]);
-                int buffers_count = _shaderReflection.Description.ConstantBuffers;
-                SharpDX.Direct3D11.Buffer[] _buffers = new SharpDX.Direct3D11.Buffer[buffers_count];
-                for (int i = 0; i < buffers_count; i++)
-                {
-                    ConstantBuffer cb_buffer = _shaderReflection.GetConstantBuffer(i);
-                    _buffers[i] = new SharpDX.Direct3D11.Buffer(Device, cb_buffer.Description.Size, ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
-                }
-                _shaderSolution.shaders_buffers[sh] = _buffers;
-            }
         }
 
-        public void Render(DeviceContext context, vsBuffer vsBuffer, psBuffer psBuffer)
+        public void Render(DeviceContext context)
         {
             context.InputAssembler.InputLayout = layout;
             if (isTesselated)
@@ -95,17 +81,18 @@ namespace ROD_core.Graphics.Assets
             }
             context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(mesh.vertexBuffer, mesh._vertexStream.vertexType.SizeOf(), 0));
             context.InputAssembler.SetIndexBuffer(mesh.indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+
             context.VertexShader.Set(_shaderSolution.vs);
             for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.VertexShader].Length; i++)
             {
                 context.VertexShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.VertexShader][i]);
-                context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.VertexShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.VertexShader][i]);
+                context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.VertexShader][i].cache, _shaderSolution.shaders_buffers[Shaders.VertexShader][i]);
             }
             context.PixelShader.Set(_shaderSolution.ps);
             for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.PixelShader].Length; i++)
             {
                 context.PixelShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.PixelShader][i]);
-                context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.PixelShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.PixelShader][i]);
+                context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.PixelShader][i].cache, _shaderSolution.shaders_buffers[Shaders.PixelShader][i]);
             }
             if (this.isTesselated)
             {
@@ -113,16 +100,14 @@ namespace ROD_core.Graphics.Assets
                 for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.HullShader].Length; i++)
                 {
                     context.HullShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.HullShader][i]);
-                    context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.HullShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.HullShader][i]);
+                    context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.HullShader][i].cache, _shaderSolution.shaders_buffers[Shaders.HullShader][i]);
                 }
                 context.DomainShader.Set(_shaderSolution.ds);
                 for (int i = 0; i < _shaderSolution.shaders_buffers[Shaders.DomainShader].Length; i++)
                 {
                     context.DomainShader.SetConstantBuffer(i, _shaderSolution.shaders_buffers[Shaders.DomainShader][i]);
-                    context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.DomainShader][i].GetPackedBytes(), _shaderSolution.shaders_buffers[Shaders.DomainShader][i]);
+                    context.UpdateSubresource<byte>(_shaderSolution.shaders_constants[Shaders.DomainShader][i].cache, _shaderSolution.shaders_buffers[Shaders.DomainShader][i]);
                 }
-
-                //context.UpdateSubresource(ref vsBuffer, _shaderSolution.shaders_buffers[Shaders.DomainShader][0]);
             }
             else
             {
@@ -133,11 +118,6 @@ namespace ROD_core.Graphics.Assets
             {
                 context.PixelShader.SetShaderResource(i, material.textures[i]);
             }
-
-            //context.UpdateSubresource(ref vsBuffer, _shaderSolution.shaders_buffers[Shaders.VertexShader][0]);
-
-            // !!!!!!!!!!!!!!!!!!!!!!! not normal (be careful of shader being optimized and stripped of unused constant buffer)
-            //context.UpdateSubresource(ref psBuffer, _shaderSolution.shaders_buffers[Shaders.PixelShader][0]);
             context.PixelShader.SetSampler(0, sampler);
             context.DrawIndexed(mesh._indexStream.getIndexCount(), 0, 0);
         }
