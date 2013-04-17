@@ -5,20 +5,13 @@ using System.Text;
 
 namespace ROD_core.Graphics.Animation
 {
-    public class Poses
-    {
-        protected Pose poseA;
-        protected Pose poseB;
-    }
-    public struct PoseTime
-    {
-        public TimeSpan startTime;
-        public TimeSpan endTime;
-    }
-
     public class Clip_Skinning : Clip
     {
-        public Dictionary<PoseTime, Poses> animationData;
+
+
+        public Queue<Pose> sequencesData;
+        // End time of the coresponding sequences
+        public Queue<TimeSpan> sequencesTiming;
 
         public override void Update(float _delta)
         {

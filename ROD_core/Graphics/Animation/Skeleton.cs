@@ -15,11 +15,11 @@ namespace ROD_core.Graphics.Animation
     public class Bone
     {
         string name;
-
+    }
     public class Skeleton
     {
         public string name;
         public SkeletonArchetype skeletonType;
-        public List<string> description;
+        public Pose bindPose;
     }
 }

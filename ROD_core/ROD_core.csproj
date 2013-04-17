@@ -69,6 +69,7 @@
     <Compile Include="Graphics\Animation\Joint.cs" />
     <Compile Include="Graphics\Animation\Pose.cs" />
     <Compile Include="Graphics\Animation\Sequence.cs" />
+    <Compile Include="Graphics\Animation\Skeleton.cs" />
     <Compile Include="Graphics\Assets\Skeleton.cs" />
     <Compile Include="LinqExtension.cs" />
     <Compile Include="Mathematics\DualQuaternion.cs" />
