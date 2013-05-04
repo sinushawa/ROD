@@ -247,18 +247,19 @@ namespace ROD_engine_DX11
 
         protected override void Update(float time, float step)
         {
-            Debug.WriteLine(time);
+
             camera.Update();
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
-            float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.025f * step/1000);
+            float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.025f * step/1);
+            Debug.WriteLine(rotAngle);
             Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
             lightRotation = rotLight * lightRotation;
-            lightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
-
+            Vector3 ElightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
+            Debug.WriteLine(ElightPos);
             object sent = ((object)viewproj);
             ROD_core.ShaderBinding.ConstantsPool["ViewProjection"].Update(ref sent);
-            object sentlp = ((object)lightPos);
+            object sentlp = ((object)ElightPos);
             ROD_core.ShaderBinding.ConstantsPool["LightPos"].Update(ref sentlp);
             ROD_core.ShaderBinding.UpdateFlaggedConstants();
             //ROD_core.ShaderBinding.UpdateConstants("ViewProjection");

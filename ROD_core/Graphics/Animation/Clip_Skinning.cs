@@ -15,11 +15,6 @@ namespace ROD_core.Graphics.Animation
 
         public override void Update(float _delta)
         {
-            actualLocalTime = actualLocalTime + TimeSpan.FromMilliseconds(_delta);
-            KeyValuePair<PoseTime, Poses> poses=animationData.Where(x => x.Key.startTime < actualLocalTime && x.Key.endTime > actualLocalTime).First();
-            TimeSpan duration = poses.Key.endTime - poses.Key.startTime;
-            TimeSpan positionTimeline = actualLocalTime - poses.Key.startTime;
-            float weight = (float)(positionTimeline.TotalMilliseconds/duration.TotalMilliseconds);
         }
     }
 }
