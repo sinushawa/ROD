@@ -6,20 +6,13 @@ using ROD_core.Graphics.Assets;
 
 namespace ROD_core.Graphics.Animation
 {
-    public struct ClipTiming
-    {
-        public TimeSpan duration;
-        public TimeSpan startOffset;
-        public TimeSpan endOffset;
-    }
 
     public abstract class Clip
     {
         public event EventHandler ClipFinished;
-
-        private TimeSpan _actualLocalTime;
-        private ClipTiming _time;
+        private TimeSpan _localTime = new TimeSpan(0);
         private float _scale = 1.0f;
+        public bool isPlaying = false;
         private bool _isLooping = false;
         private AnimationType _animationType;
         private Model _target;
@@ -28,26 +21,15 @@ namespace ROD_core.Graphics.Animation
         {
         }
 
-        public TimeSpan actualLocalTime
+        public TimeSpan localTime
         {
             get
             {
-                return _actualLocalTime;
+                return _localTime;
             }
             set
             {
-                _actualLocalTime = (TimeSpan)value;
-            }
-        }
-        public ClipTiming time
-        {
-            get
-            {
-                return _time;
-            }
-            set
-            {
-                _time=(ClipTiming)value;
+                _localTime = (TimeSpan)value;
             }
         }
 
@@ -99,5 +81,9 @@ namespace ROD_core.Graphics.Animation
         }
 
         public abstract void Update(float _delta);
+        public void Start()
+        {
+            isPlaying = true;
+        }
     }
 }

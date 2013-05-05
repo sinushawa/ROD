@@ -10,5 +10,6 @@ namespace ROD_core.Graphics.Animation
     {
         public string name;
         public Skeleton _baseSkeleton;
+        public Joint _rootJoint;
     }
 }

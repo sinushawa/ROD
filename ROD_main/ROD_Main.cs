@@ -252,11 +252,9 @@ namespace ROD_engine_DX11
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
             float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.025f * step/1);
-            Debug.WriteLine(rotAngle);
             Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
             lightRotation = rotLight * lightRotation;
             Vector3 ElightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
-            Debug.WriteLine(ElightPos);
             object sent = ((object)viewproj);
             ROD_core.ShaderBinding.ConstantsPool["ViewProjection"].Update(ref sent);
             object sentlp = ((object)ElightPos);

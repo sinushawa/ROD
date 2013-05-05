@@ -5,6 +5,7 @@ using System.Text;
 using SharpDX;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using DualQuaternion = ROD_core.Mathematics.DualQuaternion;
 
 namespace ROD_core.Graphics.Animation
 {
@@ -15,9 +16,9 @@ namespace ROD_core.Graphics.Animation
         public string name;
         public Joint parent;
         public List<Joint> children;
-        public ROD_core.Mathematics.DualQuaternion localRotationTranslation;
+        public DualQuaternion localRotationTranslation;
 
-        public Joint(int _id, string _name, object _parent, ROD_core.Mathematics.DualQuaternion _localRotationTranslation)
+        public Joint(int _id, string _name, object _parent, DualQuaternion _localRotationTranslation)
         {
             id = _id;
             name = _name;
@@ -35,7 +36,13 @@ namespace ROD_core.Graphics.Animation
             info.AddValue("name", name, typeof(string));
             info.AddValue("parent", parent, typeof(Joint));
             info.AddValue("children", children, typeof(List<Joint>));
-            info.AddValue("localRotationTranslation", localRotationTranslation, typeof(ROD_core.Mathematics.DualQuaternion));
+            info.AddValue("localRotationTranslation", localRotationTranslation, typeof(DualQuaternion));
+        }
+        public DualQuaternion GetWorldTransform()
+        {
+            DualQuaternion parentTransform = parent.GetWorldTransform();
+            DualQuaternion jointWorldTransform = localRotationTranslation * parentTransform;
+            return jointWorldTransform;
         }
     }
 }
