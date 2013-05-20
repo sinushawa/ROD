@@ -88,5 +88,16 @@ namespace ROD_core.Mathematics
             M.M43 = t.Z;
             return M;
         }
+
+        public static DualQuaternion DLB(List<DualQuaternion> quaternions, List<float> weights)
+        {
+            DualQuaternion blendDQ = quaternions[0]*weights[0];
+            for (int i = 1; i < quaternions.Count; i++)
+            {
+                blendDQ += quaternions[i] * weights[i];
+            }
+
+            return DualQuaternion.Normalize(blendDQ);
+        }
     }
 }

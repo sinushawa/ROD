@@ -30,6 +30,15 @@ namespace ROD_core.Graphics.Animation
             localRotationTranslation = _localRotationTranslation;
         }
 
+        protected Joint(SerializationInfo info, StreamingContext context)
+        {
+            id = (int)info.GetValue("id", typeof(int));
+            name = (string)info.GetValue("name", typeof(string));
+            parent = (Joint)info.GetValue("parent", typeof(Joint));
+            children = (List<Joint>)info.GetValue("children", typeof(List<Joint>));
+            localRotationTranslation = (DualQuaternion)info.GetValue("localRotationTranslation", typeof(DualQuaternion));
+        }
+
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("id", id, typeof(int));
@@ -37,6 +46,17 @@ namespace ROD_core.Graphics.Animation
             info.AddValue("parent", parent, typeof(Joint));
             info.AddValue("children", children, typeof(List<Joint>));
             info.AddValue("localRotationTranslation", localRotationTranslation, typeof(DualQuaternion));
+        }
+        public IEnumerable<Joint> GetDepthEnumerable()
+        {
+            foreach (Joint child in children)
+            {
+                var e = child.GetDepthEnumerable().GetEnumerator();
+                while (e.MoveNext())
+                {
+                    yield return e.Current;
+                }
+            }
         }
         public DualQuaternion GetWorldTransform()
         {

@@ -12,14 +12,13 @@ namespace ROD_core.Graphics.Animation
         Biped = (1 << 1),
         Quadruped = (1 << 1)
     }
-    public class Bone
-    {
-        string name;
-    }
     public class Skeleton
     {
         public string name;
+        public Guid id;
         public SkeletonArchetype skeletonType;
+        public int jointCount;
         public Pose bindPose;
+        public Pose currentPose;
     }
 }

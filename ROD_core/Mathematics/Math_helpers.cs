@@ -19,5 +19,9 @@ namespace ROD_core.Mathematics
         {
             return (float)(degrees * Math.PI / 180.0);
         }
+        public static float ToDegrees(float radians)
+        {
+            return (float)(radians * 180.0 / Math.PI);
+        }
     }
 }

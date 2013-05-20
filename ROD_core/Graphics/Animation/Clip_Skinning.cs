@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ROD_core.Mathematics;
 
 namespace ROD_core.Graphics.Animation
 {
+    
     public class Clip_Skinning : Clip
     {
 
@@ -22,7 +24,7 @@ namespace ROD_core.Graphics.Animation
         public TimeSpan _localTime=new TimeSpan(0);
         public TimeSpan _nextTime;
 
-        public Joint _currentSkeletonWorldRotationTranslation;
+        public Pose _currentLocalPose;
 
         public override void Start()
         {
@@ -49,11 +51,15 @@ namespace ROD_core.Graphics.Animation
                 float Nweight = (float)(_localTime.TotalMilliseconds / _nextTime.TotalMilliseconds);
                 float Pweight = 1 - Nweight;
 
+                _currentLocalPose = _previousPose;
+                List<Joint> _previousJ = _previousPose.GetAllJoints();
+                List<Joint> _nextJ = _nextPose.GetAllJoints();
+                for (int i = 0; i < _previousJ.Count; i++)
+                {
+                    DualQuaternion DQ = DualQuaternion.DLB(new List<DualQuaternion>() { _previousJ[i].localRotationTranslation, _nextJ[i].localRotationTranslation }, new List<float>() { Pweight, Nweight });
+                    _currentLocalPose.GetJointByName(_previousJ[i].name).localRotationTranslation = DQ;
+                }
             }
-        }
-        private void ComputeJoint(Joint _joint)
-        {
-
         }
     }
 }

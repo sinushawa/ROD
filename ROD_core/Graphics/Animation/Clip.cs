@@ -15,7 +15,6 @@ namespace ROD_core.Graphics.Animation
         public bool isPlaying = false;
         private bool _isLooping = false;
         private AnimationType _animationType;
-        private Model _target;
 
         public Clip()
         {
@@ -68,20 +67,8 @@ namespace ROD_core.Graphics.Animation
             }
         }
 
-        public Model target
-        {
-            get
-            {
-                return _target;
-            }
-            set
-            {
-                _target = (Model)value;
-            }
-        }
-
         public abstract void Update(float _delta);
-        public void Start()
+        public virtual void Start()
         {
             isPlaying = true;
         }

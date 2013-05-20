@@ -6,9 +6,13 @@ using ROD_core.Graphics.Animation;
 
 namespace ROD_core.Graphics.Assets
 {
-    public class Skeleton
+    public class Entity : Model
     {
-        public string name;
-        public Joint root;
+        public Skeleton skeleton;
+
+        public Entity()
+        {
+            isSkinned = true;
+        }
     }
 }

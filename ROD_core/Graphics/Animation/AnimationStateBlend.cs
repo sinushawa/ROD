@@ -5,9 +5,7 @@ using System.Text;
 
 namespace ROD_core.Graphics.Animation
 {
-    public class AnimationManager
+    public class AnimationStateBlend
     {
-        public float time;
-
     }
 }
