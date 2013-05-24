@@ -64,12 +64,21 @@ namespace ROD_core.Graphics.Animation
                 yield return node;
             }
         }
+        private void Queuing(Joint joint, Queue<Joint> stack)
+        {
+            stack.Enqueue(joint);
+            if (joint.parent != null)
+            {
+                Queuing(joint.parent, stack);
+            }
+        }
         public IEnumerable<Joint> GetParentEnumerable()
         {
-            if (parent != null)
+            Queue<Joint> stack = new Queue<Joint>();
+            Queuing(this, stack);
+            while (stack.Count > 0)
             {
-                var e = parent.GetParentEnumerable().First();
-                yield return e;
+                yield return stack.Dequeue();
             }
         }
         public DualQuaternion GetWorldTransform()
