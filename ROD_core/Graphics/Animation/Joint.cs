@@ -49,13 +49,27 @@ namespace ROD_core.Graphics.Animation
         }
         public IEnumerable<Joint> GetDepthEnumerable()
         {
-            foreach (Joint child in children)
+            var queue = new Queue<Joint>();
+            queue.Enqueue(this);
+
+            while (0 < queue.Count)
             {
-                var e = child.GetDepthEnumerable().GetEnumerator();
-                while (e.MoveNext())
+                Joint node = queue.Dequeue();
+
+                foreach (Joint child in node.children)
                 {
-                    yield return e.Current;
+                    queue.Enqueue(child);
                 }
+
+                yield return node;
+            }
+        }
+        public IEnumerable<Joint> GetParentEnumerable()
+        {
+            if (parent != null)
+            {
+                var e = parent.GetParentEnumerable().First();
+                yield return e;
             }
         }
         public DualQuaternion GetWorldTransform()

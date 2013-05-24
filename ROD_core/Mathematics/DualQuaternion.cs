@@ -22,6 +22,11 @@ namespace ROD_core.Mathematics
             real.Normalize();
             dual = (new Quaternion(_t, 0) * real) * 0.5f;
         }
+        /// <summary>
+        /// The identity <see cref="ROD_core.Mathematics.DualQuaternion"/> (0, 0, 0, 1) (0, 0, 0, 0).
+        /// </summary>
+        public static readonly DualQuaternion Identity = new DualQuaternion(new Quaternion (0.0f, 0.0f, 0.0f, 1.0f), new Quaternion(0,0,0,0));
+
         public static float Dot(DualQuaternion a, DualQuaternion b)
         {
             return Quaternion.Dot(a.real, b.real);
