@@ -68,9 +68,14 @@ namespace ROD_core.Graphics.Animation
         }
 
         public abstract void Update(float _delta);
-        public virtual void Start()
+        public virtual void Play()
         {
             isPlaying = true;
         }
+        public virtual void Pause()
+        {
+            isPlaying = false;
+        }
+        public abstract void GoTo(float _delta);
     }
 }

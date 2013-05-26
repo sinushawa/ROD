@@ -5,7 +5,9 @@ using System.Text;
 
 namespace ROD_core.Graphics.Animation
 {
-    public class AnimationStateBlend
+    public enum TreeNavigation
     {
+        Breadth_first,
+        depth_first
     }
 }

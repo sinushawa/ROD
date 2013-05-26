@@ -58,16 +58,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic_structures\Vertex_POS_TEX.cs" />
+    <Compile Include="BoneIndices.cs" />
     <Compile Include="ConstantBuilder.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Graphics\Animation\AnimationState.cs" />
-    <Compile Include="Graphics\Animation\AnimationStateBlend.cs" />
+    <Compile Include="Graphics\Animation\AnimationSkinningState.cs" />
     <Compile Include="Graphics\Animation\AnimationType.cs" />
     <Compile Include="Graphics\Animation\Clip_Skinning.cs" />
     <Compile Include="Graphics\Animation\Clip.cs" />
     <Compile Include="Graphics\Animation\Joint.cs" />
     <Compile Include="Graphics\Animation\Pose.cs" />
     <Compile Include="Graphics\Animation\Skeleton.cs" />
+    <Compile Include="Graphics\Animation\TreeNavigation.cs" />
     <Compile Include="Graphics\Assets\Entity.cs" />
     <Compile Include="LinqExtension.cs" />
     <Compile Include="Mathematics\DualQuaternion.cs" />

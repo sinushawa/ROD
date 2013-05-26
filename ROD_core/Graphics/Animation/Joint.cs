@@ -18,6 +18,13 @@ namespace ROD_core.Graphics.Animation
         public List<Joint> children;
         public DualQuaternion localRotationTranslation;
 
+        public Joint(int _id, string _name)
+            : this(_id, _name, null, DualQuaternion.Identity)
+        {
+        }
+        public Joint(int _id, string _name, object _parent) : this( _id, _name, _parent, DualQuaternion.Identity)
+        {
+        }
         public Joint(int _id, string _name, object _parent, DualQuaternion _localRotationTranslation)
         {
             id = _id;
@@ -47,7 +54,32 @@ namespace ROD_core.Graphics.Animation
             info.AddValue("children", children, typeof(List<Joint>));
             info.AddValue("localRotationTranslation", localRotationTranslation, typeof(DualQuaternion));
         }
-        public IEnumerable<Joint> GetDepthEnumerable()
+        public IEnumerable<Joint> GetEnumerable(TreeNavigation navigation)
+        {
+            if (navigation == TreeNavigation.depth_first)
+            {
+                return this.GetDepthEnumerable();
+            }
+            else
+            {
+                return this.GetBreadthEnumerable();
+            }
+        }
+        private IEnumerable<Joint> GetDepthEnumerable()
+        {
+            yield return this;
+            foreach (Joint child in children)
+            {
+                var e = child.GetDepthEnumerable().GetEnumerator();
+                while (e.MoveNext())
+                {
+                    yield return e.Current;
+                }
+            }
+            
+            
+        }
+        private IEnumerable<Joint> GetBreadthEnumerable()
         {
             var queue = new Queue<Joint>();
             queue.Enqueue(this);
@@ -81,11 +113,43 @@ namespace ROD_core.Graphics.Animation
                 yield return stack.Dequeue();
             }
         }
-        public DualQuaternion GetWorldTransform()
+        public Joint Clone(Joint _parent)
         {
-            DualQuaternion parentTransform = parent.GetWorldTransform();
-            DualQuaternion jointWorldTransform = localRotationTranslation * parentTransform;
-            return jointWorldTransform;
+            Joint joint = new Joint(this.id, this.name, _parent);
+            int childrensNb = this.children.Count;
+            for (int i = 0; i < childrensNb; i++)
+            {
+                joint.children.Add(this.children[i].Clone(joint));
+            }
+            return joint;
+        }
+        
+        public Joint GetWorldTransformVersion()
+        {
+            return AggreagateJoints(this, null);
+        }
+        private static ROD_core.Graphics.Animation.Joint AggreagateJoints(Joint joint, Joint _parent)
+        {
+            Joint TJoint = new Joint(joint.id, joint.name, _parent, joint.localRotationTranslation);
+            DualQuaternion DQ = AggregateLocalTM(TJoint);
+            TJoint.localRotationTranslation = DQ;
+            int childrensNb = joint.children.Count;
+            for (int i = 0; i < childrensNb; i++)
+            {
+                TJoint.children.Add(AggreagateJoints(joint.children[i], TJoint));
+            }
+            return TJoint;
+        }
+        private static DualQuaternion AggregateLocalTM(Joint joint)
+        {
+            DualQuaternion DQ = DualQuaternion.Identity;
+            if (joint.parent != null)
+            {
+                DQ = joint.parent.localRotationTranslation;
+            }
+            DualQuaternion LDQ = joint.localRotationTranslation;
+            DQ = LDQ * DQ;
+            return DQ;
         }
     }
 }

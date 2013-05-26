@@ -7,5 +7,6 @@ namespace ROD_core.Graphics.Animation
 {
     public class AnimationState
     {
+
     }
 }

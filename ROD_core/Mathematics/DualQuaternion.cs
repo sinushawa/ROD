@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpDX;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace ROD_core.Mathematics
 {
-    public struct DualQuaternion
+    [Serializable]
+    public struct DualQuaternion : ISerializable
     {
         public Quaternion real;
         public Quaternion dual;
@@ -22,6 +26,18 @@ namespace ROD_core.Mathematics
             real.Normalize();
             dual = (new Quaternion(_t, 0) * real) * 0.5f;
         }
+        private DualQuaternion(SerializationInfo info, StreamingContext context)
+        {
+            real = (Quaternion)info.GetValue("real", typeof(Quaternion));
+            dual = (Quaternion)info.GetValue("dual", typeof(Quaternion));
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("real", real, typeof(Quaternion));
+            info.AddValue("dual", dual, typeof(Quaternion));
+        }
+
         /// <summary>
         /// The identity <see cref="ROD_core.Mathematics.DualQuaternion"/> (0, 0, 0, 1) (0, 0, 0, 0).
         /// </summary>
