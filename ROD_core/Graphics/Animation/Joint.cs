@@ -54,6 +54,10 @@ namespace ROD_core.Graphics.Animation
             info.AddValue("children", children, typeof(List<Joint>));
             info.AddValue("localRotationTranslation", localRotationTranslation, typeof(DualQuaternion));
         }
+        public IEnumerable<Joint> GetEnumerable()
+        {
+            return GetEnumerable(TreeNavigation.depth_first);
+        }
         public IEnumerable<Joint> GetEnumerable(TreeNavigation navigation)
         {
             if (navigation == TreeNavigation.depth_first)

@@ -21,9 +21,15 @@ namespace ROD_core
     {
         public override event UpdatedConstantEventHandler Updated;
 
-        public DataType mDataType;
+        public DataType[] mDataType;
+        public int _arraySize;
 
         public Constant_Variable(ref DataType value)
+        {
+            mDataType[0] = value;
+            _arraySize = 1;
+        }
+        public Constant_Variable(ref DataType[] value)
         {
             mDataType = value;
         }
@@ -33,7 +39,7 @@ namespace ROD_core
             {
                 throw new NotImplementedException();
             }
-            mDataType = (DataType)_data;
+            mDataType = (DataType[])_data;
             Updated(this, null);
         }
         public override byte[] GetByte()

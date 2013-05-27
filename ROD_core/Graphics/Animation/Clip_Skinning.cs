@@ -12,13 +12,10 @@ namespace ROD_core.Graphics.Animation
     [Serializable]
     public class Clip_Skinning : Clip, ISerializable
     {
-
+        public Pose startPose;
         public List<Pose> sequencesData;
         // End time of the coresponding sequences every timing is global (the time correspond to the necessary t=0 origin pose to timespan nextPose)
         public List<TimeSpan> sequencesTiming;
-
-        // move skeleton out of this class the movement of limbs is not fixed to one skeleton, a skeleton receives an animation and a model to animate
-        public Skeleton skeleton;
 
         public Pose previousPose;
         public Pose nextPose;
@@ -27,15 +24,20 @@ namespace ROD_core.Graphics.Animation
         public TimeSpan _nextTime;
         public TimeSpan _previousTime;
 
+        public Clip_Skinning()
+        {
+        }
         #region Serialize
         protected Clip_Skinning(SerializationInfo info, StreamingContext context)
         {
+            startPose = (Pose)info.GetValue("startPose", typeof(Pose));
             sequencesData = (List<Pose>)info.GetValue("sequencesData", typeof(List<Pose>));
             sequencesTiming = (List<TimeSpan>)info.GetValue("sequencesTiming", typeof(List<TimeSpan>));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            info.AddValue("startPose", startPose, typeof(Pose));
             info.AddValue("sequencesData", sequencesData, typeof(List<Pose>));
             info.AddValue("sequencesTiming", sequencesTiming, typeof(List<TimeSpan>));
         }
@@ -67,7 +69,7 @@ namespace ROD_core.Graphics.Animation
         public void Init()
         {
             localTime = new TimeSpan(0);
-            previousPose = skeleton.bindPose;
+            previousPose = startPose;
             nextPose = sequencesData[0];
             _nextTime = sequencesTiming[0];
             _previousTime = new TimeSpan(0);

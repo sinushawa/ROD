@@ -10,17 +10,17 @@ namespace ROD_core
     /// </summary> 
     public struct BoneIndices
     {
-        public byte index0;
-        public byte index1;
-        public byte index2;
-        public byte index3;
+        public UInt32 index0;
+        public UInt32 index1;
+        public UInt32 index2;
+        public UInt32 index3;
 
-        public BoneIndices(byte _index0, byte _index1, byte _index2, byte _index3)
+        public BoneIndices(int _index0, int _index1, int _index2, int _index3)
         {
-            index0 = _index0;
-            index1 = _index1;
-            index2 = _index2;
-            index3 = _index3;
+            index0 = (UInt32)_index0;
+            index1 = (UInt32)_index1;
+            index2 = (UInt32)_index2;
+            index3 = (UInt32)_index3;
         }
     }
 }
