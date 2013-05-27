@@ -17,6 +17,8 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using ROD_core.Graphics.Assets;
+using ROD_core.Graphics.Animation;
+using ROD_core.Mathematics;
 
 namespace ROD_engine_DX11
 {
@@ -42,6 +44,7 @@ namespace ROD_engine_DX11
         private Vector4 lightColor;
         private Matrix world;
         private Matrix viewproj;
+        private ROD_core.Mathematics.DualQuaternion[] boneDQ;
         private ROD_core.Scene scene;
         private ROD_core.RenderToTexture.RenderTexture render_texture;
         private ROD_core.RenderToTexture.ScreenQuad sq;
@@ -61,6 +64,20 @@ namespace ROD_engine_DX11
             };
             ROD_core.ShaderSolution ShSolutionDNT = new ROD_core.ShaderSolution("DNS_Tes", Device, ShadersByteCodeDNT);
             ROD_core.Technique DNT = ROD_core.Technique.Diffuse_mapping|ROD_core.Technique.Normal_mapping|ROD_core.Technique.Specular_mapping|ROD_core.Technique.Tesslation;
+
+            ROD_core.ShaderBinding.ShaderPool.Add(DNT, ShSolutionDNT);
+
+
+            //Shader for diffuse texture, normal texture and bump with tesselationand skinning
+            ROD_core.ByteCodeBind[] ShadersByteCodeDNTS = new ROD_core.ByteCodeBind[]{
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselationSkinning.vs", "VS", "vs_5_0",ShaderFlags.Debug)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.HullShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.hs", "HS", "hs_5_0",ShaderFlags.Debug)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation_ward.ps", "PS", "ps_5_0",ShaderFlags.Debug))
+            };
+            ROD_core.ShaderSolution ShSolutionDNTS = new ROD_core.ShaderSolution("DNS_TesS", Device, ShadersByteCodeDNTS);
+            ROD_core.Technique DNTS = ROD_core.Technique.Diffuse_mapping | ROD_core.Technique.Normal_mapping | ROD_core.Technique.Specular_mapping | ROD_core.Technique.Tesslation | ROD_core.Technique.Skinning;
+
 
             ROD_core.ShaderBinding.ShaderPool.Add(DNT, ShSolutionDNT);
 
@@ -132,6 +149,9 @@ namespace ROD_engine_DX11
 
             //
 
+            Mesh body_mesh = Mesh.createFromFile("testBB.rod");
+            Entity body = new Entity(body_mesh, body_material, true);
+            /*
             Mesh body_mesh = Mesh.createFromFile("bodyBB.rod");
             Model body = new Model(body_mesh, body_material, true);
             Mesh head_mesh = Mesh.createFromFile("headBB.rod");
@@ -140,14 +160,22 @@ namespace ROD_engine_DX11
             Model eyes = new Model(eyes_mesh, head_material, true);
             Mesh hair_mesh = Mesh.createFromFile("hairBB.rod");
             Model hair = new Model(hair_mesh, hair_material, true);
+             * */
             //Mesh box_mesh = Mesh.createFromFile("boxBB.rod");
             //Model box = new Model(box_mesh, bricks_material, false);
 
             scene.models.Add(body);
+            /*
+            scene.models.Add(body);
             scene.models.Add(head);
             scene.models.Add(eyes);
             scene.models.Add(hair);
+             * */
             //scene.models.Add(box);
+
+
+            Clip_Skinning clip = Clip_Skinning.createFromFile("testBB.clp");
+            Skeleton skelete = Skeleton.createFromFile("testBB.skl");
 
             sq.material = Render_TO_Tex_material;
             sq.Initialize(Device);
@@ -175,6 +203,7 @@ namespace ROD_engine_DX11
             ROD_core.ShaderBinding.ConstantsPool.Add("eyePos", new ROD_core.Constant_Variable<Vector3>(ref camera.cameraTransformed.eye));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightPos", new ROD_core.Constant_Variable<Vector3>(ref lightPos));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightColor", new ROD_core.Constant_Variable<Vector4>(ref lightColor));
+            ROD_core.ShaderBinding.ConstantsPool.Add("BoneDQ", new ROD_core.Constant_Variable<DualQuaternion[]>(ref boneDQ));
 
             ROD_core.ShaderBinding.BuildBuffers(Device);
             ROD_core.ShaderBinding.InitConstants();
