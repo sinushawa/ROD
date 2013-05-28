@@ -49,6 +49,7 @@ namespace ROD_core.Graphics.Assets
         {
             ToDispose(mesh);
             _shaderSolution=ROD_core.ShaderBinding.GetCompatibleShader(this);
+            var truc = mesh._vertexStream.vertexDefinition.GetInputElements();
             layout = new InputLayout(Device, _shaderSolution.shaders_bytecode[Shaders.VertexShader], mesh._vertexStream.vertexDefinition.GetInputElements());
             
             mesh.Load(Device);

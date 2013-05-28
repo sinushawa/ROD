@@ -44,7 +44,8 @@ namespace ROD_engine_DX11
         private Vector4 lightColor;
         private Matrix world;
         private Matrix viewproj;
-        private ROD_core.Mathematics.DualQuaternion[] boneDQ;
+        private Skeleton skelete;
+
         private ROD_core.Scene scene;
         private ROD_core.RenderToTexture.RenderTexture render_texture;
         private ROD_core.RenderToTexture.ScreenQuad sq;
@@ -79,7 +80,7 @@ namespace ROD_engine_DX11
             ROD_core.Technique DNTS = ROD_core.Technique.Diffuse_mapping | ROD_core.Technique.Normal_mapping | ROD_core.Technique.Specular_mapping | ROD_core.Technique.Tesslation | ROD_core.Technique.Skinning;
 
 
-            ROD_core.ShaderBinding.ShaderPool.Add(DNT, ShSolutionDNT);
+            ROD_core.ShaderBinding.ShaderPool.Add(DNTS, ShSolutionDNTS);
 
 
             //Shader for simple diffuse texture
@@ -174,9 +175,6 @@ namespace ROD_engine_DX11
             //scene.models.Add(box);
 
 
-            Clip_Skinning clip = Clip_Skinning.createFromFile("testBB.clp");
-            Skeleton skelete = Skeleton.createFromFile("testBB.skl");
-
             sq.material = Render_TO_Tex_material;
             sq.Initialize(Device);
         }
@@ -194,6 +192,11 @@ namespace ROD_engine_DX11
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
 
+            Clip_Skinning clip = Clip_Skinning.createFromFile("testBB.clp");
+            skelete = Skeleton.createFromFile("testBB.skl");
+            skelete.animation.clips.Add(clip);
+            skelete.animation.clipWeights.Add(1);
+
             
         }
         private void SetShaders()
@@ -203,7 +206,7 @@ namespace ROD_engine_DX11
             ROD_core.ShaderBinding.ConstantsPool.Add("eyePos", new ROD_core.Constant_Variable<Vector3>(ref camera.cameraTransformed.eye));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightPos", new ROD_core.Constant_Variable<Vector3>(ref lightPos));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightColor", new ROD_core.Constant_Variable<Vector4>(ref lightColor));
-            ROD_core.ShaderBinding.ConstantsPool.Add("BoneDQ", new ROD_core.Constant_Variable<DualQuaternion[]>(ref boneDQ));
+            ROD_core.ShaderBinding.ConstantsPool.Add("BoneDQ", new ROD_core.Constant_Variable<DualQuaternion>(ref skelete.BonePalette));
 
             ROD_core.ShaderBinding.BuildBuffers(Device);
             ROD_core.ShaderBinding.InitConstants();
@@ -276,7 +279,7 @@ namespace ROD_engine_DX11
 
         protected override void Update(float time, float step)
         {
-
+            skelete.Update(step);
             camera.Update();
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
@@ -288,6 +291,8 @@ namespace ROD_engine_DX11
             ROD_core.ShaderBinding.ConstantsPool["ViewProjection"].Update(ref sent);
             object sentlp = ((object)ElightPos);
             ROD_core.ShaderBinding.ConstantsPool["LightPos"].Update(ref sentlp);
+            object sentbm = ((object)skelete.BonePalette);
+            ROD_core.ShaderBinding.ConstantsPool["BoneDQ"].Update(ref sentbm);
             ROD_core.ShaderBinding.UpdateFlaggedConstants();
             //ROD_core.ShaderBinding.UpdateConstants("ViewProjection");
         }

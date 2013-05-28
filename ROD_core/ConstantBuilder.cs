@@ -26,12 +26,14 @@ namespace ROD_core
 
         public Constant_Variable(ref DataType value)
         {
+            mDataType = new DataType[1];
             mDataType[0] = value;
             _arraySize = 1;
         }
         public Constant_Variable(ref DataType[] value)
         {
             mDataType = value;
+            _arraySize = value.Length;
         }
         public override void Update(ref object _data)
         {
@@ -44,7 +46,12 @@ namespace ROD_core
         }
         public override byte[] GetByte()
         {
-            return ConstantBuilder.StructureToBytes(mDataType);
+            List<byte[]> ManualBuffer = new List<byte[]>();
+            for(int i=0; i< _arraySize; i++)
+            {
+                ManualBuffer.Add(ConstantBuilder.StructureToBytes(mDataType[i]));
+            }
+            return ManualBuffer.SelectMany(x=> x).ToArray();
         }
     }
     public class ConstantPack
@@ -82,7 +89,7 @@ namespace ROD_core
 
         public void Update<TStruct>(string name, TStruct value) where TStruct : struct
         {
-            int id = pack.Select((item, index) => new { itemname = item.Key, itemIndex = index }).Where(x => x.itemname == name).First().itemIndex;
+            int id = pack.Select((item, index) => new { itemname = item.Key, itemIndex = index }).First(x => x.itemname == name).itemIndex;
             pack.RemoveAt(id);
             Constant_Variable<TStruct> _constant = new Constant_Variable<TStruct>(ref value);
             pack.Insert(id, new KeyValuePair<string, ConstantVariable>(name, _constant));

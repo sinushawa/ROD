@@ -17,8 +17,8 @@ struct VS_INPUT
 	float2 Texcoord		  : TEXCOORD;
 	float3 Binormal		  : BINORMAL;
 	float3 Tangent		  : TANGENT;
-	uint BoneIndices[4]   : BLENDINDICES;
-	float Boneweights[4]  : BLENDWEIGHT;
+	float4 BoneIndices    : BLENDINDICES;
+	float4 Boneweights    : BLENDWEIGHT;
 
 };
 
@@ -36,21 +36,21 @@ VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
 	
-	float2x4 blendDQ = input.Boneweights[0]*boneDQ[input.BoneIndices[0]];
-	blendDQ += input.Boneweights[1]*boneDQ[input.BoneIndices[1]];
-	blendDQ += input.Boneweights[2]*boneDQ[input.BoneIndices[2]];
-	blendDQ += input.Boneweights[3]*boneDQ[input.BoneIndices[3]];
+	float2x4 boneDQ = input.Boneweights.x*BoneDQ[input.BoneIndices.x];
+	boneDQ += input.Boneweights.y*BoneDQ[input.BoneIndices.y];
+	boneDQ += input.Boneweights.z*BoneDQ[input.BoneIndices.z];
+	boneDQ += input.Boneweights.z*BoneDQ[input.BoneIndices.z];
 
-	float len = length(blendDQ[0]);
-	blendDQ /= len;
+	float len = length(boneDQ[0]);
+	boneDQ /= len;
 
-	float3 position = input.Position.xyz + 2.0*cross(blendDQ[0].yzw, cross(blendDQ[0].yzw, input.Position.xyz) + blendDQ[0].x*input.Position.xyz);
-	float3 trans = 2.0*(blendDQ[0].x*blendDQ[1].yzw - blendDQ[1].x*blendDQ[0].yzw + cross(blendDQ[0].yzw, blendDQ[1].yzw));
+	float3 position = input.Position.xyz + 2.0*cross(boneDQ[0].yzw, cross(boneDQ[0].yzw, input.Position.xyz) + boneDQ[0].x*input.Position.xyz);
+	float3 trans = 2.0*(boneDQ[0].x*boneDQ[1].yzw - boneDQ[1].x*boneDQ[0].yzw + cross(boneDQ[0].yzw, boneDQ[1].yzw));
 	position += trans;
 
 	output.WorldPos = float4( position, 1.0f );
 	
-	float3 normal = input.Normal + 2.0*cross(blendDQ[0].yzw, cross(blendDQ[0].yzw, input.Normal) + blendDQ[0].x*input.Normal);
+	float3 normal = input.Normal + 2.0*cross(boneDQ[0].yzw, cross(boneDQ[0].yzw, input.Normal) + boneDQ[0].x*input.Normal);
 
 	output.Normal = normal;
 

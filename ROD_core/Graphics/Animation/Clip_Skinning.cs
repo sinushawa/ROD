@@ -12,7 +12,6 @@ namespace ROD_core.Graphics.Animation
     [Serializable]
     public class Clip_Skinning : Clip, ISerializable
     {
-        public Pose startPose;
         public List<Pose> sequencesData;
         // End time of the coresponding sequences every timing is global (the time correspond to the necessary t=0 origin pose to timespan nextPose)
         public List<TimeSpan> sequencesTiming;
@@ -30,14 +29,12 @@ namespace ROD_core.Graphics.Animation
         #region Serialize
         protected Clip_Skinning(SerializationInfo info, StreamingContext context)
         {
-            startPose = (Pose)info.GetValue("startPose", typeof(Pose));
             sequencesData = (List<Pose>)info.GetValue("sequencesData", typeof(List<Pose>));
             sequencesTiming = (List<TimeSpan>)info.GetValue("sequencesTiming", typeof(List<TimeSpan>));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("startPose", startPose, typeof(Pose));
             info.AddValue("sequencesData", sequencesData, typeof(List<Pose>));
             info.AddValue("sequencesTiming", sequencesTiming, typeof(List<TimeSpan>));
         }
@@ -69,9 +66,9 @@ namespace ROD_core.Graphics.Animation
         public void Init()
         {
             localTime = new TimeSpan(0);
-            previousPose = startPose;
-            nextPose = sequencesData[0];
-            _nextTime = sequencesTiming[0];
+            previousPose = sequencesData[0];
+            nextPose = sequencesData[1];
+            _nextTime = sequencesTiming[1];
             _previousTime = new TimeSpan(0);
         }
         public override void Play()
@@ -97,7 +94,7 @@ namespace ROD_core.Graphics.Animation
             }
             if (localTime > _nextTime)
             {
-                int index = sequencesTiming.IndexOf(sequencesTiming.Where(x => x < localTime).Last());
+                int index = sequencesTiming.IndexOf(sequencesTiming.Last(x => x < localTime));
                 previousPose = sequencesData[index-1];
                 nextPose = sequencesData[index];
                 _previousTime = sequencesTiming[index-1];

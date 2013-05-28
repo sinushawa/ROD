@@ -28,6 +28,7 @@ namespace ROD_core.Graphics.Animation
         public int jointCount;
         public Pose bindPose;
         public Pose currentPose;
+        public DualQuaternion[] BonePalette;
 
         public AnimationSkinningState animation;
 
@@ -36,8 +37,16 @@ namespace ROD_core.Graphics.Animation
             name = _name;
             animation = new AnimationSkinningState();
         }
+        public Skeleton(string _name, Pose _bindPose)
+        {
+            name = _name;
+            bindPose = _bindPose;
+            animation = new AnimationSkinningState();
+            jointCount = bindPose.rootJoint.GetEnumerable().ToList().Count;
+            BonePalette = new DualQuaternion[jointCount];
+        }
 
-                #region Serialize
+        #region Serialize
         protected Skeleton(SerializationInfo info, StreamingContext context)
         {
             name = (string)info.GetValue("name", typeof(string));
@@ -61,6 +70,8 @@ namespace ROD_core.Graphics.Animation
             FileStream readStream = new FileStream(_filename, FileMode.Open);
             Skeleton loadedSkeleton = (Skeleton)bf.Deserialize(readStream);
             readStream.Close();
+            loadedSkeleton.BonePalette = new DualQuaternion[loadedSkeleton.jointCount];
+            loadedSkeleton.animation = new AnimationSkinningState();
             return loadedSkeleton;
         }
         public void saveToFile(string _filename)
@@ -79,10 +90,13 @@ namespace ROD_core.Graphics.Animation
         public void Update(float _delta)
         {
             currentPose = animation.ComputeLocalPose(_delta);
+            GetJointWTMList();
         }
         public List<DualQuaternion> GetJointWTMList()
         {
-            return currentPose.GetWorldTransformVersion().GetJoints(TreeNavigation.Breadth_first).Select(x=> x.localRotationTranslation).ToList();
+            List<DualQuaternion> DQs = currentPose.GetWorldTransformVersion().GetJoints(TreeNavigation.Breadth_first).Select(x=> x.localRotationTranslation).ToList();
+            BonePalette = DQs.ToArray();
+            return DQs;
         }
     }
 }
