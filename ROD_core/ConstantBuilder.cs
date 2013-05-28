@@ -37,11 +37,20 @@ namespace ROD_core
         }
         public override void Update(ref object _data)
         {
-            if (!(_data is DataType)) 
+            
+            Type valueType = _data.GetType();
+            if (!(_data is DataType) && valueType.GetElementType()!= typeof(DataType))
             {
                 throw new NotImplementedException();
             }
-            mDataType = (DataType[])_data;
+            if (valueType.IsArray)
+            {
+                mDataType = (DataType[])_data;
+            }
+            else
+            {
+                mDataType[0] = (DataType)_data;
+            }
             Updated(this, null);
         }
         public override byte[] GetByte()

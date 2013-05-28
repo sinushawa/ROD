@@ -29,13 +29,19 @@ namespace ROD_core.Graphics.Animation
         #region Serialize
         protected Clip_Skinning(SerializationInfo info, StreamingContext context)
         {
-            sequencesData = (List<Pose>)info.GetValue("sequencesData", typeof(List<Pose>));
+            MemoryStream ms = new MemoryStream((byte[])info.GetValue("sequencesData", typeof(byte[])));
+            BinaryFormatter bf = new BinaryFormatter();
+            sequencesData = (List<Pose>)bf.Deserialize(ms);
             sequencesTiming = (List<TimeSpan>)info.GetValue("sequencesTiming", typeof(List<TimeSpan>));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("sequencesData", sequencesData, typeof(List<Pose>));
+            MemoryStream ms = new MemoryStream();
+            BinaryFormatter bFormatter = new BinaryFormatter();
+            bFormatter.Serialize(ms, sequencesData);
+            ms.Close();
+            info.AddValue("sequencesData", ms.GetBuffer(), typeof(byte[]));
             info.AddValue("sequencesTiming", sequencesTiming, typeof(List<TimeSpan>));
         }
         #endregion
@@ -94,11 +100,18 @@ namespace ROD_core.Graphics.Animation
             }
             if (localTime > _nextTime)
             {
-                int index = sequencesTiming.IndexOf(sequencesTiming.Last(x => x < localTime));
-                previousPose = sequencesData[index-1];
-                nextPose = sequencesData[index];
-                _previousTime = sequencesTiming[index-1];
-                _nextTime = sequencesTiming[index];
+                if (nextPose == sequencesData[sequencesData.Count - 1])
+                {
+                    Init();
+                }
+                else
+                {
+                    int index = sequencesTiming.IndexOf(sequencesTiming.Last(x => x < localTime));
+                    previousPose = sequencesData[index - 1];
+                    nextPose = sequencesData[index];
+                    _previousTime = sequencesTiming[index - 1];
+                    _nextTime = sequencesTiming[index];
+                }
             }
             nweight = (float)((localTime.TotalMilliseconds-_previousTime.TotalMilliseconds) / (_nextTime.TotalMilliseconds-_previousTime.TotalMilliseconds));
         }

@@ -71,7 +71,7 @@ namespace ROD_engine_DX11
 
             //Shader for diffuse texture, normal texture and bump with tesselationand skinning
             ROD_core.ByteCodeBind[] ShadersByteCodeDNTS = new ROD_core.ByteCodeBind[]{
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselationSkinning.vs", "VS", "vs_5_0",ShaderFlags.Debug)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselationSkinning.vs", "VS", "vs_5_0",ShaderFlags.Debug|ShaderFlags.SkipOptimization)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.HullShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.hs", "HS", "hs_5_0",ShaderFlags.Debug)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation_ward.ps", "PS", "ps_5_0",ShaderFlags.Debug))
@@ -182,17 +182,19 @@ namespace ROD_engine_DX11
         private void SetEnvironnement()
         {
             // Set up the camera
-            Vector3 eye = new Vector3(0.0f, 100.0f, -300.0f);   // Where the camera is looking from
-            Vector3 target = new Vector3(0.0f, 100.0f, 0.0f);     // Where the camera is looking at
+            Vector3 eye = new Vector3(0.0f, 1.0f, -3.0f);   // Where the camera is looking from
+            Vector3 target = new Vector3(0.0f, 1.0f, 0.0f);     // Where the camera is looking at
             Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);     // Vector point upwards
             camera = new ROD_core.Camera(eye, target);
-            camera.CreateProjection(55.0f, Window.ClientSize.Width, Window.ClientSize.Height, 0.1f, 2000.0f);
-            lightPos = new Vector3(0.0f, 100.0f, -300.0f);
+            camera.CreateProjection(55.0f, Window.ClientSize.Width, Window.ClientSize.Height, 0.001f, 200.0f);
+            lightPos = new Vector3(0.0f, 1.0f, -3.0f);
             lightRotation = Quaternion.Identity;
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
 
             Clip_Skinning clip = Clip_Skinning.createFromFile("testBB.clp");
+            clip.Init();
+            clip.isPlaying = true;
             skelete = Skeleton.createFromFile("testBB.skl");
             skelete.animation.clips.Add(clip);
             skelete.animation.clipWeights.Add(1);
@@ -226,7 +228,7 @@ namespace ROD_engine_DX11
             {
                 mouseDelta.X = mouseState.X;
                 mouseDelta.Y = mouseState.Y;
-                camera.Orbit((mouseDelta.X / 5), (mouseDelta.Y / 5));
+                camera.Orbit((mouseDelta.X / 10), (mouseDelta.Y / 10));
             }
             else
             {
@@ -235,7 +237,7 @@ namespace ROD_engine_DX11
                 mouseCoord.X += mouseState.X;
                 mouseCoord.Y += mouseState.Y;
                 _mouseWheelFactor = mouseState.Z;
-                camera.Zoom(_mouseWheelFactor/5.0f);
+                camera.Zoom(_mouseWheelFactor/5000.0f);
             }
 
         }
@@ -248,27 +250,27 @@ namespace ROD_engine_DX11
                 List<SharpDX.DirectInput.Key> pressed_keys = keyboardState.PressedKeys;
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Up))
                 {
-                    camera.Pan(0.0f, 5.0f);
+                    camera.Pan(0.0f, 0.005f);
                 }
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Down))
                 {
-                    camera.Pan(0.0f, -5.0f);
+                    camera.Pan(0.0f, -0.005f);
                 }
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.D))
                 {
-                    camera.Pan(5.0f, 0.0f);
+                    camera.Pan(0.005f, 0.0f);
                 }
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.A))
                 {
-                    camera.Pan(-5.0f, 0.0f);
+                    camera.Pan(-0.005f, 0.0f);
                 }
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.Q))
                 {
-                    camera.Revolve(1.0f, 0.0f);
+                    camera.Revolve(0.001f, 0.0f);
                 }
                 if (keyboardState.IsPressed(SharpDX.DirectInput.Key.E))
                 {
-                    camera.Revolve(-1.0f, 0.0f);
+                    camera.Revolve(-0.001f, 0.0f);
                 }
             }
             catch

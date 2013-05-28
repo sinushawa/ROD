@@ -50,12 +50,12 @@ namespace ROD_core.Graphics.Animation
         }
         public Joint GetJointByName(string name)
         {
-            Joint joint = GetJoints(TreeNavigation.Breadth_first).Where(x => x.name == name).First();
+            Joint joint = GetJoints(TreeNavigation.depth_first).Where(x => x.name == name).First();
             return joint;
         }
         public Joint GetJointById(int id)
         {
-            Joint joint = GetJoints(TreeNavigation.Breadth_first).Where(x => x.id == id).First();
+            Joint joint = GetJoints(TreeNavigation.depth_first).Where(x => x.id == id).First();
             return joint;
         }
         public static Pose DLB(List<Pose> poses, List<float> weights)
@@ -77,6 +77,14 @@ namespace ROD_core.Graphics.Animation
             BinaryFormatter bFormatter = new BinaryFormatter();
             bFormatter.Serialize(stream, this);
             stream.Close();
+        }
+        public MemoryStream saveToMemory()
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter bFormatter = new BinaryFormatter();
+            bFormatter.Serialize(stream, this);
+            stream.Close();
+            return stream;
         }
         public static void saveToFile(Pose _pose, string _filename)
         {

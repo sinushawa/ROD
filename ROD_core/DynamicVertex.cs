@@ -55,9 +55,9 @@ namespace ROD_core
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32_Float, typeof(Vector3))]
 		BINORMAL = (1 << 5),
         [SemanticAttribute(SharpDX.DXGI.Format.R32G32B32A32_UInt, typeof(BoneIndices))]
-		BONEINDEX = (1 << 6),
+        BLENDINDICES = (1 << 6),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32A32_Float, typeof(Vector4))]
-		BONEWEIGHT = (1 << 7),
+        BLENDWEIGHT = (1 << 7),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32_Float, typeof(float))]
 		PSIZE = (1 << 8),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32_Float, typeof(Vector3))]

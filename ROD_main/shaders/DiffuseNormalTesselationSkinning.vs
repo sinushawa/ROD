@@ -6,7 +6,10 @@ cbuffer vsc
 	float padding1;
 	float3 LightPos;
 	float padding2;
-	uniform float2x4 BoneDQ[100];
+}
+cbuffer vsb
+{
+	uniform float2x4 BoneDQ[54];
 }
 
 // Shader input / output
@@ -17,7 +20,7 @@ struct VS_INPUT
 	float2 Texcoord		  : TEXCOORD;
 	float3 Binormal		  : BINORMAL;
 	float3 Tangent		  : TANGENT;
-	float4 BoneIndices    : BLENDINDICES;
+	uint4 BoneIndices    : BLENDINDICES;
 	float4 Boneweights    : BLENDWEIGHT;
 
 };
@@ -36,10 +39,10 @@ VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
 	
-	float2x4 boneDQ = input.Boneweights.x*BoneDQ[input.BoneIndices.x];
-	boneDQ += input.Boneweights.y*BoneDQ[input.BoneIndices.y];
-	boneDQ += input.Boneweights.z*BoneDQ[input.BoneIndices.z];
-	boneDQ += input.Boneweights.z*BoneDQ[input.BoneIndices.z];
+	float2x4 boneDQ = input.Boneweights[0]*BoneDQ[input.BoneIndices[0]];
+	boneDQ += input.Boneweights[1]*BoneDQ[input.BoneIndices[1]];
+	boneDQ += input.Boneweights[2]*BoneDQ[input.BoneIndices[2]];
+	boneDQ += input.Boneweights[3]*BoneDQ[input.BoneIndices[3]];
 
 	float len = length(boneDQ[0]);
 	boneDQ /= len;
