@@ -9,7 +9,7 @@ cbuffer vsc
 }
 cbuffer vsb
 {
-	uniform float2x4 BoneDQ[54];
+	uniform float4 BoneDQ[106];
 }
 
 // Shader input / output
@@ -39,10 +39,12 @@ VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
 	
-	float2x4 boneDQ = input.Boneweights[0]*BoneDQ[input.BoneIndices[0]];
-	boneDQ += input.Boneweights[1]*BoneDQ[input.BoneIndices[1]];
-	boneDQ += input.Boneweights[2]*BoneDQ[input.BoneIndices[2]];
-	boneDQ += input.Boneweights[3]*BoneDQ[input.BoneIndices[3]];
+	float2x4 BoneDQC[53] = (float2x4[53])BoneDQ;
+
+	float2x4 boneDQ = input.Boneweights[0]*BoneDQC[input.BoneIndices[0]];
+	boneDQ += input.Boneweights[1]*BoneDQC[input.BoneIndices[1]];
+	boneDQ += input.Boneweights[2]*BoneDQC[input.BoneIndices[2]];
+	boneDQ += input.Boneweights[3]*BoneDQC[input.BoneIndices[3]];
 
 	float len = length(boneDQ[0]);
 	boneDQ /= len;
