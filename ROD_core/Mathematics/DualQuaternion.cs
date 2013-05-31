@@ -14,6 +14,34 @@ namespace ROD_core.Mathematics
     {
         public Quaternion real;
         public Quaternion dual;
+        public Vector3 Axis
+        {
+            get
+            {
+                return GetRotation(this).Axis;
+            }
+        }
+        public float Angle
+        {
+            get
+            {
+                return GetRotation(this).Angle;
+            }
+        }
+        public Quaternion Rotation
+        {
+            get
+            {
+                return GetRotation(this);
+            }
+        }
+        public Vector3 Translation
+        {
+            get
+            {
+                return GetTranslation(this);
+            }
+        }
 
         public DualQuaternion(Quaternion _real, Quaternion _dual)
         {
@@ -60,6 +88,13 @@ namespace ROD_core.Mathematics
             DualQuaternion resultat = q;
             resultat.real *= scale;
             resultat.dual *= scale;
+            return resultat;
+        }
+        public static DualQuaternion operator /(DualQuaternion q, float scale)
+        {
+            DualQuaternion resultat = q;
+            resultat.real *= 1.0f/scale;
+            resultat.dual *= 1.0f/scale;
             return resultat;
         }
         public static DualQuaternion operator +(DualQuaternion _left, DualQuaternion _right)
@@ -110,6 +145,11 @@ namespace ROD_core.Mathematics
             return M;
         }
 
+        public float Length()
+        {
+            return real.Length();
+        }
+
         public static DualQuaternion DLB(List<DualQuaternion> quaternions, List<float> weights)
         {
             DualQuaternion blendDQ = quaternions[0]*weights[0];
@@ -117,8 +157,8 @@ namespace ROD_core.Mathematics
             {
                 blendDQ += quaternions[i] * weights[i];
             }
-
-            return DualQuaternion.Normalize(blendDQ);
+            blendDQ /= blendDQ.Length();
+            return blendDQ;
         }
     }
 }
