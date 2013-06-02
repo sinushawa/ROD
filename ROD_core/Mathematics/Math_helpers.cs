@@ -23,5 +23,28 @@ namespace ROD_core.Mathematics
         {
             return (float)(radians * 180.0 / Math.PI);
         }
+        public static float GetPitch(Quaternion q)
+        {
+            float temp = (float)Math.Atan2(2 * (q.Y * q.Z + q.W * q.X), q.W * q.W - q.X * q.X - q.Y * q.Y + q.Z * q.Z);
+            float temp3 = (float)Math.Round(temp, 2);
+            return temp3;
+        }
+        public static float GetYaw(Quaternion q)
+        {
+            float temp = -2 * (q.X * q.Z - q.W * q.Y);
+            float temp3 = (float)Math.Round(temp % (Math.PI/2.0f),2);
+            float temp2 = (float)Math.Asin(temp3);
+            return temp2;
+        }
+        public static float GetRoll(Quaternion q)
+        {
+            float temp = (float)Math.Atan2(2 * (q.X * q.Y + q.W * q.Z), q.W * q.W + q.X * q.X - q.Y * q.Y - q.Z * q.Z);
+            float temp3 = (float)Math.Round(temp, 2);
+            return temp3;
+        }
+        public static Vector3 GetYawPitchRoll(Quaternion q)
+        {
+            return new Vector3(ToDegrees(GetYaw(q)), ToDegrees(GetPitch(q)), ToDegrees(GetRoll(q)));
+        }
     }
 }

@@ -89,12 +89,13 @@ namespace ROD_core.Graphics.Animation
 
         public void Update(float _delta)
         {
-            //currentPose = animation.ComputeLocalPose(_delta);
-            currentPose = animation.clips[0].nextPose;
+            currentPose = animation.ComputeLocalPose(_delta);
+            //currentPose = animation.clips[0].nextPose;
             GetJointWTMList();
         }
         public List<DualQuaternion> GetJointWTMList()
         {
+            List<Joint> _localJoint = currentPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
             List<Joint> _worldJoint = currentPose.GetWorldTransformVersion().GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
             List<Joint> _bindJoints = bindPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
             List<DualQuaternion> CDQs = _worldJoint.Zip(_bindJoints, (x, y) => x.localRotationTranslation * DualQuaternion.Conjugate(y.localRotationTranslation)).ToList();

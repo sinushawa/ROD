@@ -14,6 +14,14 @@ namespace ROD_core.Mathematics
     {
         public Quaternion real;
         public Quaternion dual;
+
+        public Vector3 YawPitchRoll
+        {
+            get
+            {
+                return Math_helpers.GetYawPitchRoll(this.real);
+            }
+        }
         public Vector3 Axis
         {
             get
@@ -157,7 +165,6 @@ namespace ROD_core.Mathematics
             {
                 blendDQ += quaternions[i] * weights[i];
             }
-            blendDQ /= blendDQ.Length();
             return blendDQ;
         }
     }
