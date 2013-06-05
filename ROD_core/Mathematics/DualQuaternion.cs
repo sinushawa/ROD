@@ -15,11 +15,11 @@ namespace ROD_core.Mathematics
         public Quaternion real;
         public Quaternion dual;
 
-        public Vector3 YawPitchRoll
+        public Vector3 RollPitchYaw
         {
             get
             {
-                return Math_helpers.GetYawPitchRoll(this.real);
+                return Math_helpers.GetRollYawPitch(this.real);
             }
         }
         public Vector3 Axis
@@ -90,6 +90,10 @@ namespace ROD_core.Mathematics
             resultat.real *= 1.0f / mag;
             resultat.dual *= 1.0f / mag;
             return resultat;
+        }
+        public void Normalize()
+        {
+            this=DualQuaternion.Normalize(this);
         }
         public static DualQuaternion operator *(DualQuaternion q, float scale)
         {
@@ -165,6 +169,7 @@ namespace ROD_core.Mathematics
             {
                 blendDQ += quaternions[i] * weights[i];
             }
+            blendDQ.Normalize();
             return blendDQ;
         }
     }

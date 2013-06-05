@@ -153,6 +153,7 @@ namespace ROD_core.Graphics.Animation
             }
             DualQuaternion LDQ = joint.localRotationTranslation;
             DQ = LDQ * DQ;
+            DQ.Normalize();
             return DQ;
         }
     }
