@@ -84,7 +84,7 @@ namespace ROD_engine_DX11
 
             //Shader for diffuse texture, normal texture and bump with tesselationand skinning
             ROD_core.ByteCodeBind[] ShadersByteCodeDNS = new ROD_core.ByteCodeBind[]{
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalSkinning.vs", "VS", "vs_5_0",ShaderFlags.Debug|ShaderFlags.SkipOptimization)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalSkinningBind.vs", "VS", "vs_5_0",ShaderFlags.Debug|ShaderFlags.SkipOptimization)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormal.ps", "PS", "ps_5_0",ShaderFlags.Debug))
             };
             ROD_core.ShaderSolution ShSolutionDNS = new ROD_core.ShaderSolution("DNS_S", Device, ShadersByteCodeDNS);
@@ -227,6 +227,7 @@ namespace ROD_engine_DX11
             ROD_core.ShaderBinding.ConstantsPool.Add("LightPos", new ROD_core.Constant_Variable<Vector3>(ref lightPos));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightColor", new ROD_core.Constant_Variable<Vector4>(ref lightColor));
             ROD_core.ShaderBinding.ConstantsPool.Add("BoneDQ", new ROD_core.Constant_Variable<DualQuaternion>(ref skelete.BonePalette));
+            ROD_core.ShaderBinding.ConstantsPool.Add("InvBindDQ", new ROD_core.Constant_Variable<DualQuaternion>(ref skelete.BindPalette));
 
             ROD_core.ShaderBinding.BuildBuffers(Device);
             ROD_core.ShaderBinding.InitConstants();
@@ -313,6 +314,8 @@ namespace ROD_engine_DX11
             ROD_core.ShaderBinding.ConstantsPool["LightPos"].Update(ref sentlp);
             object sentbm = ((object)skelete.BonePalette);
             ROD_core.ShaderBinding.ConstantsPool["BoneDQ"].Update(ref sentbm);
+            object sentbdm = ((object)skelete.BindPalette);
+            ROD_core.ShaderBinding.ConstantsPool["InvBindDQ"].Update(ref sentbdm);
             ROD_core.ShaderBinding.UpdateFlaggedConstants();
             //ROD_core.ShaderBinding.UpdateConstants("ViewProjection");
         }
