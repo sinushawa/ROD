@@ -82,6 +82,17 @@ namespace ROD_engine_DX11
 
             ROD_core.ShaderBinding.ShaderPool.Add(DNTS, ShSolutionDNTS);
 
+            //Shader for diffuse texture, normal texture and bump with tesselationand skinning
+            ROD_core.ByteCodeBind[] ShadersByteCodeDNS = new ROD_core.ByteCodeBind[]{
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalSkinning.vs", "VS", "vs_5_0",ShaderFlags.Debug|ShaderFlags.SkipOptimization)),
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormal.ps", "PS", "ps_5_0",ShaderFlags.Debug))
+            };
+            ROD_core.ShaderSolution ShSolutionDNS = new ROD_core.ShaderSolution("DNS_S", Device, ShadersByteCodeDNS);
+            ROD_core.Technique DNS = ROD_core.Technique.Diffuse_mapping | ROD_core.Technique.Normal_mapping | ROD_core.Technique.Specular_mapping | ROD_core.Technique.Skinning;
+
+
+            ROD_core.ShaderBinding.ShaderPool.Add(DNS, ShSolutionDNS);
+
 
             //Shader for simple diffuse texture
             ROD_core.ByteCodeBind[] ShadersByteCodeD = new ROD_core.ByteCodeBind[]{
@@ -151,7 +162,7 @@ namespace ROD_engine_DX11
             //
 
             Mesh body_mesh = Mesh.createFromFile("testBB.rod");
-            Entity body = new Entity(body_mesh, body_material, true);
+            Entity body = new Entity(body_mesh, body_material, false);
             /*
             Mesh body_mesh = Mesh.createFromFile("bodyBB.rod");
             Model body = new Model(body_mesh, body_material, true);
@@ -185,7 +196,14 @@ namespace ROD_engine_DX11
             Vector3 eye = new Vector3(0.0f, 1.0f, -3.0f);   // Where the camera is looking from
             Vector3 target = new Vector3(0.0f, 1.0f, 0.0f);     // Where the camera is looking at
             Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);     // Vector point upwards
-            camera = new ROD_core.Camera(eye, target);
+
+            Vector3 axisX = Vector3.UnitX;
+            Quaternion DX_to_MAX_dq = Quaternion.RotationAxis(axisX, Math_helpers.ToRadians(90));
+            Matrix DX_to_MAX_mx = Matrix.RotationQuaternion(DX_to_MAX_dq);
+            eye = Vector3.TransformCoordinate(eye, DX_to_MAX_mx);
+            target = Vector3.TransformCoordinate(target, DX_to_MAX_mx);
+            up = Vector3.TransformCoordinate(up, DX_to_MAX_mx);
+            camera = new ROD_core.Camera(eye, target, up);
             camera.CreateProjection(55.0f, Window.ClientSize.Width, Window.ClientSize.Height, 0.001f, 200.0f);
             lightPos = new Vector3(0.0f, 1.0f, -3.0f);
             lightRotation = Quaternion.Identity;
@@ -286,7 +304,7 @@ namespace ROD_engine_DX11
             viewproj = Matrix.Multiply(camera.GetViewMatrix(), camera.projection);
             viewproj.Transpose();
             float rotAngle = ROD_core.Mathematics.Math_helpers.ToRadians(0.025f * step/1);
-            Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitY, rotAngle);
+            Quaternion rotLight = Quaternion.RotationAxis(Vector3.UnitZ, rotAngle);
             lightRotation = rotLight * lightRotation;
             Vector3 ElightPos = Vector3.TransformCoordinate(lightPos, Matrix.RotationQuaternion(lightRotation));
             object sent = ((object)viewproj);

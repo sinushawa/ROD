@@ -106,6 +106,13 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="shaders\DiffuseNormalSkinningBind.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="shaders\DiffuseNormalSpecular.ps" />
+    <None Include="shaders\DiffuseNormalSkinning.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="shaders\DiffuseNormalTesselationSkinning.vs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -124,7 +131,9 @@
     <None Include="shaders\Diffuse.vs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="shaders\DiffuseNormal.ps" />
+    <None Include="shaders\DiffuseNormal.ps">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="shaders\DiffuseNormal.vs" />
     <None Include="shaders\DiffuseNormalTesselation.ds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

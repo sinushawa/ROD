@@ -107,13 +107,13 @@ namespace ROD_core.Graphics.Animation
                 else
                 {
                     int index = sequencesTiming.IndexOf(sequencesTiming.Last(x => x < localTime));
-                    previousPose = sequencesData[index - 1];
-                    nextPose = sequencesData[index];
-                    _previousTime = sequencesTiming[index - 1];
-                    _nextTime = sequencesTiming[index];
+                    previousPose = sequencesData[index ];
+                    nextPose = sequencesData[index+1];
+                    _previousTime = sequencesTiming[index ];
+                    _nextTime = sequencesTiming[index+1];
                 }
             }
-            nweight = (float)((localTime.TotalMilliseconds-_previousTime.TotalMilliseconds) / (_nextTime.TotalMilliseconds-_previousTime.TotalMilliseconds));
+            nweight = Math.Min((float)((localTime.TotalMilliseconds-_previousTime.TotalMilliseconds) / (_nextTime.TotalMilliseconds-_previousTime.TotalMilliseconds)), 1);
         }
     }
 }

@@ -32,10 +32,10 @@ namespace ROD_core
         public Quaternion targetRotation;
         private Vector3 lookAt;
 
-        public Camera() : this(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 1.0f, 0))
+        public Camera() : this(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 1.0f))
         {
         }
-        public Camera(Vector3 _eye, Vector3 _target) : this(_eye, _target, new Vector3(0, 1.0f, 0))
+        public Camera(Vector3 _eye, Vector3 _target) : this(_eye, _target, new Vector3(0, 0, 1.0f))
         {
         }
         public Camera(Vector3 _eye, Vector3 _target, Vector3 _up)
@@ -84,7 +84,7 @@ namespace ROD_core
         /// <param name="_pitch">Angle of rotation in degrees around X.</param>
         public void Orbit(float _yaw, float _pitch)
         {
-            Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitY, ROD_core.Mathematics.Math_helpers.ToRadians((_yaw)));
+            Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitZ, ROD_core.Mathematics.Math_helpers.ToRadians((_yaw)));
             // apply the rotation around Y on rotation holding the orientation of the camera compared to its original position.
             orbitRotation = RotYaw * orbitRotation;
             // determine the local X axis
@@ -94,7 +94,7 @@ namespace ROD_core
         }
         public void Revolve(float _yaw, float _pitch)
         {
-            Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitY, ROD_core.Mathematics.Math_helpers.ToRadians((_yaw)));
+            Quaternion RotYaw = Quaternion.RotationAxis(Vector3.UnitZ, ROD_core.Mathematics.Math_helpers.ToRadians((_yaw)));
             // apply the rotation around Y on rotation holding the orientation of the camera compared to its original position.
             revolveRotation = RotYaw * revolveRotation;
             // determine the local X axis
