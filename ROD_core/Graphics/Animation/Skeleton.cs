@@ -28,7 +28,6 @@ namespace ROD_core.Graphics.Animation
         public int jointCount;
         public Pose bindPose;
         public Pose currentPose;
-        public DualQuaternion[] BindPalette;
         public DualQuaternion[] BonePalette;
 
         public AnimationSkinningState animation;
@@ -44,7 +43,6 @@ namespace ROD_core.Graphics.Animation
             bindPose = _bindPose;
             animation = new AnimationSkinningState();
             jointCount = bindPose.rootJoint.GetEnumerable().ToList().Count;
-            BindPalette = new DualQuaternion[jointCount];
             BonePalette = new DualQuaternion[jointCount];
         }
 
@@ -72,7 +70,6 @@ namespace ROD_core.Graphics.Animation
             FileStream readStream = new FileStream(_filename, FileMode.Open);
             Skeleton loadedSkeleton = (Skeleton)bf.Deserialize(readStream);
             readStream.Close();
-            loadedSkeleton.BindPalette = loadedSkeleton.bindPose.GetJoints(TreeNavigation.depth_first).Select(x=> DualQuaternion.Conjugate(x.localRotationTranslation)).ToArray();
             loadedSkeleton.BonePalette = new DualQuaternion[loadedSkeleton.jointCount];
             loadedSkeleton.animation = new AnimationSkinningState();
             return loadedSkeleton;
@@ -101,8 +98,7 @@ namespace ROD_core.Graphics.Animation
             List<Joint> _localJoint = currentPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
             List<Joint> _worldJoint = currentPose.GetWorldTransformVersion().GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
             List<Joint> _bindJoints = bindPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
-            List<DualQuaternion> CDQs = _worldJoint.Select(x => x.localRotationTranslation).ToList();
-            //List<DualQuaternion> CDQs = _worldJoint.Zip(_bindJoints, (x, y) => x.localRotationTranslation * DualQuaternion.Conjugate(y.localRotationTranslation)).ToList();
+            List<DualQuaternion> CDQs = _worldJoint.Zip(_bindJoints, (x, y) => x.localRotationTranslation * DualQuaternion.Conjugate(y.localRotationTranslation)).ToList();
             BonePalette = CDQs.ToArray();
             return CDQs;
         }
