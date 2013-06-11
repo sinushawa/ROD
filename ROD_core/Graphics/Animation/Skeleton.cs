@@ -42,7 +42,7 @@ namespace ROD_core.Graphics.Animation
             name = _name;
             bindPose = _bindPose;
             animation = new AnimationSkinningState();
-            jointCount = bindPose.rootJoint.GetEnumerable().ToList().Count;
+            jointCount = bindPose.joints.Count;
             BonePalette = new DualQuaternion[jointCount];
         }
 
@@ -95,10 +95,8 @@ namespace ROD_core.Graphics.Animation
         }
         public List<DualQuaternion> GetJointWTMList()
         {
-            List<Joint> _localJoint = currentPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
-            List<Joint> _worldJoint = currentPose.GetWorldTransformVersion().GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
-            List<Joint> _bindJoints = bindPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
-            List<DualQuaternion> CDQs = _worldJoint.Zip(_bindJoints, (x, y) =>DualQuaternion.Conjugate(y.localRotationTranslation)* x.localRotationTranslation).ToList();
+            currentPose.ComputeWorldRotationTranslation();
+            List<DualQuaternion> CDQs = currentPose.joints.Zip(bindPose.joints, (x, y) =>DualQuaternion.Conjugate(y.worldRotationTranslation)* x.worldRotationTranslation).ToList();
             BonePalette = CDQs.ToArray();
             return CDQs;
         }

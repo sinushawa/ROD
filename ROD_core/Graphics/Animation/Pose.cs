@@ -44,7 +44,7 @@ namespace ROD_core.Graphics.Animation
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("name", name, typeof(string));
-            info.AddValue("rootJoint", joints, typeof(List<Joint>));
+            info.AddValue("joints", joints, typeof(List<Joint>));
             info.AddValue("isBindPose", isBindPose, typeof(bool));
         }
         public Joint GetJointByName(string name)
@@ -133,9 +133,16 @@ namespace ROD_core.Graphics.Animation
             DualQuaternion _worldRotationTranslation = _hierarchy[0].localRotationTranslation;
             for (int i = 1; i < _hierarchy.Count; i++)
             {
-                _worldRotationTranslation = _worldRotationTranslation * _hierarchy[i].localRotationTranslation;
+                _worldRotationTranslation =_worldRotationTranslation * _hierarchy[i].localRotationTranslation;
             }
             _joint.worldRotationTranslation = _worldRotationTranslation;
+        }
+        public void ComputeWorldRotationTranslation()
+        {
+            foreach (Joint _joint in joints)
+            {
+                ComputeWorldRotationTranslation(_joint);
+            }
         }
     }
 }

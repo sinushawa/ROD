@@ -116,7 +116,7 @@ namespace ROD_core.Mathematics
         // Multiplication order - left to right
         public static DualQuaternion operator *(DualQuaternion _left, DualQuaternion _right)
         {
-            return new DualQuaternion(_right.real * _left.real, _right.dual * _left.real + _right.real * _left.dual);
+            return new DualQuaternion( _left.real*_right.real, _left.real*_right.dual +_left.dual*_right.real);
         }
         public static DualQuaternion Conjugate(DualQuaternion q)
         {
@@ -128,7 +128,7 @@ namespace ROD_core.Mathematics
         }
         public static Vector3 GetTranslation(DualQuaternion q)
         {
-            Quaternion t = (q.dual * 2.0f) * Quaternion.Conjugate(q.real);
+            Quaternion t =Quaternion.Conjugate(q.real)* (q.dual * 2.0f) ;
             return new Vector3(t.X, t.Y, t.Z);
         }
         public static Matrix DualQuaternionToMatrix(DualQuaternion q)

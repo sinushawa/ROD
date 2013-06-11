@@ -18,14 +18,14 @@ namespace ROD_core.Graphics.Animation
             List<float> sweights = clips.Select(x => x.nweight ).Zip(clipWeights, (x,y)=> x*y).ToList();
             List<float> weights = sweights.SelectMany(x => new List<float> { 1 - x, x }).ToList();
 
-            List<List<Joint>> jointsPerPose = poses.Select(x => x.GetJoints(TreeNavigation.depth_first).ToList()).ToList();
-            List<List<Joint>> jointsPerId = poses.SelectMany(x => x.GetJoints(TreeNavigation.depth_first)).GroupBy(x=> x.id).Select(x=> x.ToList()).ToList();
-            Pose currentPose = poses[0].Clone();
-            List<Joint> currentJoints = currentPose.GetJoints(TreeNavigation.depth_first);
+            List<List<Joint>> jointsPerPose = poses.Select(x => x.joints).ToList();
+            List<List<Joint>> jointsPerId = poses.SelectMany(x => x.joints).GroupBy(x=> x.id).Select(x=> x.ToList()).ToList();
+            Pose currentPose = poses[0].Clone("currentPose");
+            List<Joint> currentJoints = currentPose.joints;
             for (int i=0; i<jointsPerId.Count; i++)
             {
                 List<DualQuaternion> DQs = jointsPerId[i].Select(x=> x.localRotationTranslation).ToList();
-                currentJoints[i].localRotationTranslation = DualQuaternion.DLB(DQs, weights);
+                currentPose.joints[i].localRotationTranslation = DualQuaternion.DLB(DQs, weights);
             }
             return currentPose;
         }
