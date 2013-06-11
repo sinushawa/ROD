@@ -14,26 +14,23 @@ namespace ROD_core.Graphics.Animation
     {
         public int id;
         public string name;
-        public Joint parent;
-        public List<Joint> children;
+        public int parentId;
+        public DualQuaternion worldRotationTranslation;
         public DualQuaternion localRotationTranslation;
 
         public Joint(int _id, string _name)
-            : this(_id, _name, null, DualQuaternion.Identity)
+            : this(_id, _name, -1, DualQuaternion.Identity, DualQuaternion.Identity)
         {
         }
-        public Joint(int _id, string _name, object _parent) : this( _id, _name, _parent, DualQuaternion.Identity)
+        public Joint(int _id, string _name, int _parentId) : this( _id, _name, _parentId, DualQuaternion.Identity, DualQuaternion.Identity)
         {
         }
-        public Joint(int _id, string _name, object _parent, DualQuaternion _localRotationTranslation)
+        public Joint(int _id, string _name, int _parentId, DualQuaternion _worldRotationTranslation, DualQuaternion _localRotationTranslation)
         {
             id = _id;
             name = _name;
-            if (_parent != null)
-            {
-                parent = (Joint)_parent;
-            }
-            children = new List<Joint>();
+            parentId = _parentId;
+            worldRotationTranslation = _worldRotationTranslation;
             localRotationTranslation = _localRotationTranslation;
         }
 
@@ -41,120 +38,24 @@ namespace ROD_core.Graphics.Animation
         {
             id = (int)info.GetValue("id", typeof(int));
             name = (string)info.GetValue("name", typeof(string));
-            parent = (Joint)info.GetValue("parent", typeof(Joint));
-            children = (List<Joint>)info.GetValue("children", typeof(List<Joint>));
+            parentId = (int)info.GetValue("parentId", typeof(int));
+            worldRotationTranslation = (DualQuaternion)info.GetValue("worldRotationTranslation", typeof(DualQuaternion));
             localRotationTranslation = (DualQuaternion)info.GetValue("localRotationTranslation", typeof(DualQuaternion));
+            
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("id", id, typeof(int));
             info.AddValue("name", name, typeof(string));
-            info.AddValue("parent", parent, typeof(Joint));
-            info.AddValue("children", children, typeof(List<Joint>));
+            info.AddValue("parentId", parentId, typeof(int));
+            info.AddValue("worldRotationTranslation", worldRotationTranslation, typeof(DualQuaternion));
             info.AddValue("localRotationTranslation", localRotationTranslation, typeof(DualQuaternion));
         }
-        public IEnumerable<Joint> GetEnumerable()
+        public Joint Clone()
         {
-            return GetEnumerable(TreeNavigation.depth_first);
-        }
-        public IEnumerable<Joint> GetEnumerable(TreeNavigation navigation)
-        {
-            if (navigation == TreeNavigation.depth_first)
-            {
-                return this.GetDepthEnumerable();
-            }
-            else
-            {
-                return this.GetBreadthEnumerable();
-            }
-        }
-        private IEnumerable<Joint> GetDepthEnumerable()
-        {
-            yield return this;
-            foreach (Joint child in children)
-            {
-                var e = child.GetDepthEnumerable().GetEnumerator();
-                while (e.MoveNext())
-                {
-                    yield return e.Current;
-                }
-            }
-            
-            
-        }
-        private IEnumerable<Joint> GetBreadthEnumerable()
-        {
-            var queue = new Queue<Joint>();
-            queue.Enqueue(this);
-
-            while (0 < queue.Count)
-            {
-                Joint node = queue.Dequeue();
-
-                foreach (Joint child in node.children)
-                {
-                    queue.Enqueue(child);
-                }
-
-                yield return node;
-            }
-        }
-        private void Queuing(Joint joint, Queue<Joint> stack)
-        {
-            stack.Enqueue(joint);
-            if (joint.parent != null)
-            {
-                Queuing(joint.parent, stack);
-            }
-        }
-        public IEnumerable<Joint> GetParentEnumerable()
-        {
-            Queue<Joint> stack = new Queue<Joint>();
-            Queuing(this, stack);
-            while (stack.Count > 0)
-            {
-                yield return stack.Dequeue();
-            }
-        }
-        public Joint Clone(Joint _parent)
-        {
-            Joint joint = new Joint(this.id, this.name, _parent);
-            int childrensNb = this.children.Count;
-            for (int i = 0; i < childrensNb; i++)
-            {
-                joint.children.Add(this.children[i].Clone(joint));
-            }
-            return joint;
-        }
-        
-        public Joint GetWorldTransformVersion()
-        {
-            return AggreagateJoints(this, null);
-        }
-        private static ROD_core.Graphics.Animation.Joint AggreagateJoints(Joint joint, Joint _parent)
-        {
-            Joint TJoint = new Joint(joint.id, joint.name, _parent, joint.localRotationTranslation);
-            DualQuaternion DQ = AggregateLocalTM(TJoint);
-            TJoint.localRotationTranslation = DQ;
-            int childrensNb = joint.children.Count;
-            for (int i = 0; i < childrensNb; i++)
-            {
-                TJoint.children.Add(AggreagateJoints(joint.children[i], TJoint));
-            }
-            return TJoint;
-        }
-        private static DualQuaternion AggregateLocalTM(Joint joint)
-        {
-            DualQuaternion DQ = DualQuaternion.Identity;
-            if (joint.parent != null)
-            {
-                DQ = joint.parent.localRotationTranslation;
-            }
-            DualQuaternion LDQ = joint.localRotationTranslation;
-            DQ = LDQ * DQ;
-            DQ.Normalize();
-            return DQ;
+            Joint clone = new Joint(id, name, parentId);
+            return clone;
         }
     }
 }

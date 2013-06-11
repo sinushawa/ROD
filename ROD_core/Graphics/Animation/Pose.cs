@@ -14,48 +14,47 @@ namespace ROD_core.Graphics.Animation
     public class Pose : ISerializable
     {
         public string name;
-        public Joint rootJoint;
+        public List<Joint> joints;
         public bool isBindPose;
 
-        public Pose(string _name, Joint _root)
+        public Pose(string _name)
+            : this(_name, new List<Joint>(), false)
+        {
+        }
+
+        public Pose(string _name, List<Joint> _root)
             : this(_name, _root, false)
         {
         }
 
-        public Pose(string _name, Joint _root, bool _isBindPose)
+        public Pose(string _name, List<Joint> _root, bool _isBindPose)
         {
             name = _name;
-            rootJoint = _root;
+            joints = _root;
             isBindPose = _isBindPose;
         }
 
         protected Pose(SerializationInfo info, StreamingContext context)
         {
             name = (string)info.GetValue("name", typeof(string));
-            rootJoint = (Joint)info.GetValue("rootJoint", typeof(Joint));
+            joints = (List<Joint>)info.GetValue("joints", typeof(List<Joint>));
             isBindPose = (bool)info.GetValue("isBindPose", typeof(bool));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("name", name, typeof(string));
-            info.AddValue("rootJoint", rootJoint, typeof(Joint));
+            info.AddValue("rootJoint", joints, typeof(List<Joint>));
             info.AddValue("isBindPose", isBindPose, typeof(bool));
-        }
-
-        public List<Joint> GetJoints(TreeNavigation navigation)
-        {
-            List<Joint> _joints = rootJoint.GetEnumerable(navigation).ToList<Joint>();
-            return _joints;
         }
         public Joint GetJointByName(string name)
         {
-            Joint joint = GetJoints(TreeNavigation.depth_first).Where(x => x.name == name).First();
+            Joint joint = joints.First(x => x.name == name);
             return joint;
         }
         public Joint GetJointById(int id)
         {
-            Joint joint = GetJoints(TreeNavigation.depth_first).Where(x => x.id == id).First();
+            Joint joint = joints.First(x => x.id == id);
             return joint;
         }
         public static Pose DLB(List<Pose> poses, List<float> weights)
@@ -91,17 +90,52 @@ namespace ROD_core.Graphics.Animation
             _pose.saveToFile(_filename);
         }
 
-        public Pose Clone ()
+        public Pose Clone (string _newName)
         {
-            Joint clonedRoot = rootJoint.Clone(null);
-            Pose clone = new Pose(this.name, clonedRoot);
+            List<Joint> clonedJoints = new List<Joint>();
+            foreach (Joint _joint in joints)
+            {
+                clonedJoints.Add(_joint.Clone());
+            }
+            Pose clone = new Pose(_newName, clonedJoints);
             return clone;
         }
-        public Pose GetWorldTransformVersion()
+        public Joint GetParent(Joint _joint)
         {
-            Pose worldPose = new Pose(this.name, null);
-            worldPose.rootJoint = this.rootJoint.GetWorldTransformVersion();
-            return worldPose;
+            Joint _parentJoint = null;
+            if (_joint.parentId != -1)
+            {
+                _parentJoint = joints.First(x => x.id == _joint.parentId);
+            }
+            return _parentJoint;
+        }
+        private List<Joint> GetJointToRoot(Joint _joint)
+        {
+            List<Joint> _hierarchy = new List<Joint>();
+            _hierarchy.Add(_joint);
+            while (_joint.parentId != -1)
+            {
+                Joint _parentJoint = GetParent(_joint);
+                _hierarchy.Add(_parentJoint);
+                _joint = _parentJoint;
+            }
+            return _hierarchy;
+        }
+        private List<Joint> GetRootToJoint(Joint _joint)
+        {
+            List<Joint> _rootToJoint = GetJointToRoot(_joint);
+            _rootToJoint.Reverse();
+            return _rootToJoint;
+        }
+        private void ComputeWorldRotationTranslation(Joint _joint)
+        {
+            List<Joint> _hierarchy = GetJointToRoot(_joint);
+            DualQuaternion _worldRotationTranslation = _hierarchy[0].localRotationTranslation;
+            for (int i = 1; i < _hierarchy.Count; i++)
+            {
+                _worldRotationTranslation = _worldRotationTranslation * _hierarchy[i].localRotationTranslation;
+            }
+            _joint.worldRotationTranslation = _worldRotationTranslation;
         }
     }
 }
