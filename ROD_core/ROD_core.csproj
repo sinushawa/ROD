@@ -37,6 +37,9 @@
     <OutputPath>bin\test\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpNet">
+      <HintPath>..\ROD_main\bin\Debug\AssimpNet.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>..\..\..\C# ressources\SharpDX\DEV 2.5\Bin\Standard-net40\SharpDX.dll</HintPath>
     </Reference>
@@ -72,6 +75,7 @@
     <Compile Include="Graphics\Animation\TreeNavigation.cs" />
     <Compile Include="Graphics\Assets\Entity.cs" />
     <Compile Include="LinqExtension.cs" />
+    <Compile Include="Mathematics\Conversions\Assimp\AssimpConverter.cs" />
     <Compile Include="Mathematics\DualQuaternion.cs" />
     <Compile Include="Mathematics\Math_helpers.cs" />
     <Compile Include="RenderToTexture\RenderTexture.cs" />

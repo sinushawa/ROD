@@ -96,7 +96,7 @@ namespace ROD_engine_DX11
             Window.WindowState =FormWindowState.Normal;
             Window.CreateControl();
             VerticalSyncEnabled = _VSync;
-            CreateDevice();
+            CreateInputDevices();
 
             // Create a description of the display mode
             var modeDescription = new ModeDescription()
@@ -108,7 +108,7 @@ namespace ROD_engine_DX11
                 Width = width,
                 Height = height,
             };
-            
+
             // Create a description of the sampling for multisampling or antialiasing
             var sampleDescription = new SampleDescription()
             {
@@ -130,7 +130,7 @@ namespace ROD_engine_DX11
             };
             
             // Create the DirectX 11 Device
-            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware, DeviceCreationFlags.BgraSupport|DeviceCreationFlags.Debug, swapDescription, out Device, out swapChain);
+            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware, DeviceCreationFlags.BgraSupport, swapDescription, out Device, out swapChain);
 
             DContext = Device.ImmediateContext;
             // Create the factory which manages general graphics resources
@@ -291,7 +291,7 @@ namespace ROD_engine_DX11
             Application.Idle += new EventHandler(ApplicationIdle);
             Application.Run(Window);
         }
-        public void CreateDevice()
+        public void CreateInputDevices()
         {
             SharpDX.DirectInput.DirectInput dinput = new SharpDX.DirectInput.DirectInput();
             SharpDX.DirectInput.CooperativeLevel cooperativeLevel;

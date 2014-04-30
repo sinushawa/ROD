@@ -95,9 +95,10 @@ namespace ROD_core.Graphics.Animation
         }
         public List<DualQuaternion> GetJointWTMList()
         {
-            currentPose.ComputeWorldRotationTranslation();
+            //currentPose.ComputeWorldRotationTranslation();
+            List<DualQuaternion> CDQts = currentPose.ComputeWorldRotationTranslation(bindPose);
             List<DualQuaternion> CDQs = currentPose.joints.Zip(bindPose.joints, (x, y) =>DualQuaternion.Conjugate(y.worldRotationTranslation)* x.worldRotationTranslation).ToList();
-            BonePalette = CDQs.ToArray();
+            BonePalette = CDQts.ToArray();
             return CDQs;
         }
         /*

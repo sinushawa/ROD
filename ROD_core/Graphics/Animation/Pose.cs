@@ -137,12 +137,31 @@ namespace ROD_core.Graphics.Animation
             }
             _joint.worldRotationTranslation = _worldRotationTranslation;
         }
+        private DualQuaternion ComputeWorldRotationTranslation(Joint _joint, DualQuaternion _InverseBindTransform)
+        {
+            List<Joint> _hierarchy = GetJointToRoot(_joint);
+            DualQuaternion _worldRotationTranslation = _InverseBindTransform;
+            for (int i = 0; i < _hierarchy.Count; i++)
+            {
+                _worldRotationTranslation = _worldRotationTranslation * _hierarchy[i].localRotationTranslation;
+            }
+            return _worldRotationTranslation;
+        }
         public void ComputeWorldRotationTranslation()
         {
             foreach (Joint _joint in joints)
             {
                 ComputeWorldRotationTranslation(_joint);
             }
+        }
+        public List<DualQuaternion> ComputeWorldRotationTranslation(Pose _bindPose)
+        {
+            List<DualQuaternion> CDQs = new List<DualQuaternion>();
+            for (int i = 0; i < joints.Count; i++ )
+            {
+                CDQs.Add(ComputeWorldRotationTranslation(joints[i], DualQuaternion.Conjugate(_bindPose.joints[i].worldRotationTranslation)));
+            }
+            return CDQs;
         }
     }
 }

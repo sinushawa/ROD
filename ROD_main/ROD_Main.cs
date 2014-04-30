@@ -19,6 +19,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 using ROD_core.Graphics.Assets;
 using ROD_core.Graphics.Animation;
 using ROD_core.Mathematics;
+using Assimp;
+using Quaternion = SharpDX.Quaternion;
+using Material = ROD_core.Graphics.Assets.Material;
+using Mesh = ROD_core.Graphics.Assets.Mesh;
+using ROD_core.Mathematics.Conversions.Assimp;
 
 namespace ROD_engine_DX11
 {
@@ -129,6 +134,29 @@ namespace ROD_engine_DX11
             scene = new ROD_core.Scene();
             scene.Initialize();
 
+            AssimpImporter importer = new AssimpImporter();
+            Scene model = importer.ImportFile("AsMan.DAE", PostProcessPreset.TargetRealTimeMaximumQuality);
+            int bonesNb = model.Meshes[0].Bones.Length;
+            List<Joint> readable = new List<Joint>();
+            for (int i = 0; i < bonesNb; i++)
+            {
+                Assimp.Quaternion _q = new Assimp.Quaternion();
+                Assimp.Vector3D _t = new Vector3D();
+                model.Meshes[0].Bones[i].OffsetMatrix.DecomposeNoScaling(out _q, out _t);
+                DualQuaternion DQ = new DualQuaternion(_q.ConvertTo(), _t.ConvertTo());
+                Joint _bindJoint = new Joint(i, model.Meshes[0].Bones[i].Name);
+                _bindJoint.worldRotationTranslation = DQ;
+                readable.Add(_bindJoint);
+            }
+            float ticksPerSecond = (float)model.Animations[0].TicksPerSecond;
+            List<DualQuaternion> atZero = new List<DualQuaternion>();
+            for (int j = 0; j < model.Animations[0].NodeAnimationChannelCount; j++)
+            {
+                Quaternion _q=model.Animations[0].NodeAnimationChannels[j].RotationKeys.First(x => x.Time == 0).Value.ConvertTo();
+                Vector3 _v = model.Animations[0].NodeAnimationChannels[j].PositionKeys.First(x => x.Time == 0).Value.ConvertTo();
+                DualQuaternion DQ = new DualQuaternion(_q, _v);
+                atZero.Add(DQ);
+            }
             render_texture = new ROD_core.RenderToTexture.RenderTexture();
             bool render_target_initialization_result = render_texture.Initialize(Device, frame_width, frame_height);
             sq = new ROD_core.RenderToTexture.ScreenQuad();

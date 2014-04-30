@@ -100,13 +100,14 @@ namespace ROD_core.Graphics.Animation
             }
             if (localTime > _nextTime)
             {
+                int index = sequencesTiming.IndexOf(sequencesTiming.Last(x => x < localTime));
                 if (nextPose == sequencesData[sequencesData.Count - 1])
                 {
                     Init();
                 }
                 else
                 {
-                    int index = sequencesTiming.IndexOf(sequencesTiming.Last(x => x < localTime));
+                    
                     previousPose = sequencesData[index ];
                     nextPose = sequencesData[index+1];
                     _previousTime = sequencesTiming[index ];
