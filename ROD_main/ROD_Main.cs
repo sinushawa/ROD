@@ -138,6 +138,7 @@ namespace ROD_engine_DX11
             Scene model = importer.ImportFile("AsMan.DAE", PostProcessPreset.TargetRealTimeMaximumQuality);
             int bonesNb = model.Meshes[0].Bones.Length;
             List<Joint> readable = new List<Joint>();
+            Node[] childs = model.RootNode.Children;
             for (int i = 0; i < bonesNb; i++)
             {
                 Assimp.Quaternion _q = new Assimp.Quaternion();
@@ -148,8 +149,10 @@ namespace ROD_engine_DX11
                 _bindJoint.worldRotationTranslation = DQ;
                 readable.Add(_bindJoint);
             }
+            HierarchicalJoint root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
             float ticksPerSecond = (float)model.Animations[0].TicksPerSecond;
             List<DualQuaternion> atZero = new List<DualQuaternion>();
+            int sampling = 30;
             for (int j = 0; j < model.Animations[0].NodeAnimationChannelCount; j++)
             {
                 Quaternion _q=model.Animations[0].NodeAnimationChannels[j].RotationKeys.First(x => x.Time == 0).Value.ConvertTo();

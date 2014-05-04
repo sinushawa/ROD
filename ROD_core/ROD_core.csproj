@@ -67,8 +67,10 @@
     <Compile Include="Graphics\Animation\AnimationState.cs" />
     <Compile Include="Graphics\Animation\AnimationSkinningState.cs" />
     <Compile Include="Graphics\Animation\AnimationType.cs" />
+    <Compile Include="Graphics\Animation\AssimpSkeleton.cs" />
     <Compile Include="Graphics\Animation\Clip_Skinning.cs" />
     <Compile Include="Graphics\Animation\Clip.cs" />
+    <Compile Include="Graphics\Animation\HierarchicalJoint.cs" />
     <Compile Include="Graphics\Animation\Joint.cs" />
     <Compile Include="Graphics\Animation\Pose.cs" />
     <Compile Include="Graphics\Animation\Skeleton.cs" />
