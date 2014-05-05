@@ -149,17 +149,30 @@ namespace ROD_engine_DX11
                 _bindJoint.worldRotationTranslation = DQ;
                 readable.Add(_bindJoint);
             }
+            /*
             HierarchicalJoint root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
             float ticksPerSecond = (float)model.Animations[0].TicksPerSecond;
-            List<DualQuaternion> atZero = new List<DualQuaternion>();
             int sampling = 30;
-            for (int j = 0; j < model.Animations[0].NodeAnimationChannelCount; j++)
+            List<HierarchicalJoint> skeletonJoints = root.ToList();
+            for (int i = 0; i < model.Animations[0].NodeAnimationChannelCount; i++)
             {
-                Quaternion _q=model.Animations[0].NodeAnimationChannels[j].RotationKeys.First(x => x.Time == 0).Value.ConvertTo();
-                Vector3 _v = model.Animations[0].NodeAnimationChannels[j].PositionKeys.First(x => x.Time == 0).Value.ConvertTo();
-                DualQuaternion DQ = new DualQuaternion(_q, _v);
-                atZero.Add(DQ);
+                string name = model.Animations[0].NodeAnimationChannels[i].NodeName;
+                HierarchicalJoint currentJoint = skeletonJoints.FirstOrDefault(x => x.name == model.Animations[0].NodeAnimationChannels[i].NodeName);
+                if (currentJoint != null)
+                {
+                    Quaternion _q = Quaternion.Identity;
+                    Vector3 _v = Vector3.Zero;
+                    int step = model.Animations[0].NodeAnimationChannels[i].RotationKeys.Length / sampling;
+                    for (int j = 0; j <= step; j++)
+                    {
+                        _q = model.Animations[0].NodeAnimationChannels[i].RotationKeys[j*sampling].Value.ConvertTo();
+                        _v = model.Animations[0].NodeAnimationChannels[i].PositionKeys[j * sampling].Value.ConvertTo();
+                    }
+                    DualQuaternion DQ = new DualQuaternion(_q, _v);
+                    currentJoint.localRotationTranslation = DQ;
+                }
             }
+             */
             render_texture = new ROD_core.RenderToTexture.RenderTexture();
             bool render_target_initialization_result = render_texture.Initialize(Device, frame_width, frame_height);
             sq = new ROD_core.RenderToTexture.ScreenQuad();

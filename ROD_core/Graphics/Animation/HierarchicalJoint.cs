@@ -18,7 +18,8 @@ namespace ROD_core.Graphics.Animation
         public DualQuaternion worldRotationTranslation;
         public DualQuaternion localRotationTranslation;
 
-        public HierarchicalJoint(string _name, HierarchicalJoint _parent) : this(_name, _parent, DualQuaternion.Identity, DualQuaternion.Identity)
+        public HierarchicalJoint(string _name, HierarchicalJoint _parent)
+            : this(_name, _parent, DualQuaternion.Identity, DualQuaternion.Identity)
         {
         }
         public HierarchicalJoint(string _name, HierarchicalJoint _parent, DualQuaternion _worldRotationTranslation, DualQuaternion _localRotationTranslation)
@@ -36,7 +37,7 @@ namespace ROD_core.Graphics.Animation
             children = (List<HierarchicalJoint>)info.GetValue("children", typeof(List<HierarchicalJoint>));
             worldRotationTranslation = (DualQuaternion)info.GetValue("worldRotationTranslation", typeof(DualQuaternion));
             localRotationTranslation = (DualQuaternion)info.GetValue("localRotationTranslation", typeof(DualQuaternion));
-            
+
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -50,6 +51,20 @@ namespace ROD_core.Graphics.Animation
         {
             HierarchicalJoint clone = new HierarchicalJoint(name, null);
             return clone;
+        }
+
+    }
+    public static class HierarchicalJointExtensions
+    {
+        public static List<HierarchicalJoint> ToList(this HierarchicalJoint _rootJoint)
+        {
+            List<HierarchicalJoint> jointsList = new List<HierarchicalJoint>();
+            foreach (HierarchicalJoint _joint in _rootJoint.children)
+            {
+                jointsList.AddRange(_joint.ToList());
+            }
+            jointsList.Add(_rootJoint);
+            return jointsList;
         }
     }
 }

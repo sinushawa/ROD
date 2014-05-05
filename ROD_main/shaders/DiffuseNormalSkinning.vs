@@ -81,11 +81,9 @@ VS_OUTPUT VS(VS_INPUT input)
 	float len = length(boneDQ[0]);
 	boneDQ /= len;
 	*/
-
 	float3 position = input.Position.xyz + 2.0*cross(boneDQ[0].yzw, cross(boneDQ[0].yzw, input.Position.xyz) + boneDQ[0].x*input.Position.xyz);
 	float3 trans = 2.0*(boneDQ[0].x*boneDQ[1].yzw - boneDQ[1].x*boneDQ[0].yzw + cross(boneDQ[0].yzw, boneDQ[1].yzw));
 	position += trans;
-	
 	float3 normal = input.Normal + 2.0*cross(boneDQ[0].yzw, cross(boneDQ[0].yzw, input.Normal) + boneDQ[0].x*input.Normal);
 
 	output.Tangent = input.Tangent;
