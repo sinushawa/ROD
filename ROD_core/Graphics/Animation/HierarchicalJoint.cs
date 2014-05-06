@@ -18,6 +18,10 @@ namespace ROD_core.Graphics.Animation
         public DualQuaternion worldRotationTranslation;
         public DualQuaternion localRotationTranslation;
 
+        public HierarchicalJoint() :this("", null)
+        {
+        }
+
         public HierarchicalJoint(string _name, HierarchicalJoint _parent)
             : this(_name, _parent, DualQuaternion.Identity, DualQuaternion.Identity)
         {
@@ -65,6 +69,36 @@ namespace ROD_core.Graphics.Animation
             }
             jointsList.Add(_rootJoint);
             return jointsList;
+        }
+        public static HierarchicalJoint GetChildByName(this HierarchicalJoint _joint, string _name)
+        {
+            HierarchicalJoint _child = null;
+            HierarchicalJoint _childResult = _joint.ToList().FirstOrDefault(x => x.name == _name);
+            if (_childResult != null)
+            {
+                _child = _childResult;
+            }
+            return _child;
+        }
+        public static List<HierarchicalJoint> GetJointToRoot(this HierarchicalJoint _joint)
+        {
+            List<HierarchicalJoint> _chain = new List<HierarchicalJoint>();
+            _chain.Add(_joint);
+            if (_joint.parent != null)
+            {
+                _chain.AddRange(_joint.parent.GetJointToRoot());
+            }
+            return _chain;
+        }
+        public static void ComputeRootToJointRT(this HierarchicalJoint _joint)
+        {
+            List<HierarchicalJoint> _hierarchy = _joint.GetJointToRoot();
+            DualQuaternion _worldRotationTranslation= DualQuaternion.Identity;
+            for (int i = 0; i < _hierarchy.Count; i++)
+            {
+                _worldRotationTranslation =_worldRotationTranslation * _hierarchy[i].localRotationTranslation;
+            }
+            _joint.worldRotationTranslation = _worldRotationTranslation;
         }
     }
 }
