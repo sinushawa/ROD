@@ -23,7 +23,10 @@ namespace ROD_core.Graphics.Animation
                         _hJoint.worldRotationTranslation = _corresponding.worldRotationTranslation;
                         if (_node.Children != null)
                         {
-                            _hJoint.children.Add(ConstructSkeleton(_node.Children, _hJoint, _joints));
+                            foreach (Node _n in _node.Children)
+                            {
+                                _hJoint.children.Add(ConstructSkeleton(new Node[]{_n}, _hJoint, _joints));
+                            }
                         }
                     }
                     else

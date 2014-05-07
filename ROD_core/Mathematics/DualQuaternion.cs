@@ -116,7 +116,7 @@ namespace ROD_core.Mathematics
         // Multiplication order - left to right
         public static DualQuaternion operator *(DualQuaternion _left, DualQuaternion _right)
         {
-            return new DualQuaternion( _left.real*_right.real, _left.real*_right.dual +_left.dual*_right.real);
+            return new DualQuaternion( _right.real*_left.real, _right.real*_left.dual +_right.dual*_left.real);
         }
         public static DualQuaternion Conjugate(DualQuaternion q)
         {
@@ -171,6 +171,15 @@ namespace ROD_core.Mathematics
             }
             blendDQ.Normalize();
             return blendDQ;
+        }
+    }
+    public static class DualQuaternionExtension
+    {
+        public static Vector3 TransformByDQ(this Vector3 _point, DualQuaternion DQ)
+        {
+            Vector3 realDQXYZ = new Vector3(DQ.real.X, DQ.real.Y, DQ.real.Z);
+            Vector3 dualDQXYZ = new Vector3(DQ.dual.X, DQ.dual.Y, DQ.dual.Z);
+            return _point + 2 * Vector3.Cross(realDQXYZ, Vector3.Cross(realDQXYZ, _point) + DQ.real.W * _point) + 2 * (DQ.real.W * dualDQXYZ - DQ.dual.W * realDQXYZ + Vector3.Cross(realDQXYZ, dualDQXYZ));
         }
     }
 }

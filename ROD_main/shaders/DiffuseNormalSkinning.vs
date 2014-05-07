@@ -34,6 +34,14 @@ struct VS_OUTPUT
 	float3 Binormal		: BINORMAL;
 	float3 Tangent		: TANGENT;
 };
+float3 transformPositionDQ( float3 position, float4 realDQ, float4 dualDQ )
+{
+    return position + 2 * cross( realDQ.xyz, cross(realDQ.xyz, position) + realDQ.w*position ) +  2 * (realDQ.w * dualDQ.xyz - dualDQ.w * realDQ.xyz + cross( realDQ.xyz, dualDQ.xyz));
+}
+float3 transformNormalDQ( float3 normal, float4 realDQ, float4 dualDQ )
+{
+    return normal + 2.0 * cross( realDQ.xyz, cross( realDQ.xyz, normal ) + realDQ.w * normal );
+}
 
 VS_OUTPUT VS(VS_INPUT input)
 {
@@ -72,19 +80,8 @@ VS_OUTPUT VS(VS_INPUT input)
 
 	float length = sqrt(boneDQ[0].w * boneDQ[0].w + boneDQ[0].x * boneDQ[0].x + boneDQ[0].y * boneDQ[0].y + boneDQ[0].z * boneDQ[0].z) ;
 	boneDQ = boneDQ / length ;
-	/*
-	float2x4 boneDQ = input.Boneweights[0]*BoneDQC[input.BoneIndices[0]];
-	boneDQ += input.Boneweights[1]*BoneDQC[input.BoneIndices[1]];
-	boneDQ += input.Boneweights[2]*BoneDQC[input.BoneIndices[2]];
-	boneDQ += input.Boneweights[3]*BoneDQC[input.BoneIndices[3]];
-
-	float len = length(boneDQ[0]);
-	boneDQ /= len;
-	*/
-	float3 position = input.Position.xyz + 2.0*cross(boneDQ[0].yzw, cross(boneDQ[0].yzw, input.Position.xyz) + boneDQ[0].x*input.Position.xyz);
-	float3 trans = 2.0*(boneDQ[0].x*boneDQ[1].yzw - boneDQ[1].x*boneDQ[0].yzw + cross(boneDQ[0].yzw, boneDQ[1].yzw));
-	position += trans;
-	float3 normal = input.Normal + 2.0*cross(boneDQ[0].yzw, cross(boneDQ[0].yzw, input.Normal) + boneDQ[0].x*input.Normal);
+	float3 position = transformPositionDQ( input.Position.xyz,  boneDQ[0], boneDQ[1] );
+	float3 normal = transformNormalDQ( input.Normal, boneDQ[0], boneDQ[1] );
 
 	output.Tangent = input.Tangent;
 

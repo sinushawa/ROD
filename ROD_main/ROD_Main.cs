@@ -50,7 +50,7 @@ namespace ROD_engine_DX11
         private Matrix world;
         private Matrix viewproj;
         private Skeleton skelete;
-
+        private HierarchicalJoint root;
         private ROD_core.Scene scene;
         private ROD_core.RenderToTexture.RenderTexture render_texture;
         private ROD_core.RenderToTexture.ScreenQuad sq;
@@ -149,8 +149,41 @@ namespace ROD_engine_DX11
                 _bindJoint.worldRotationTranslation = DQ;
                 readable.Add(_bindJoint);
             }
+            root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
+
+            Vector3 point1 = new Vector3(5, 0, 0);
+            Vector3 point2 = new Vector3(5, 2, 0);
+            Vector3 point3 = new Vector3(5, 5, 0);
+            Vector3 point4 = new Vector3(8, 5, 0);
+            Vector3 axisZ = Vector3.UnitZ;
+            Vector3 origin = new Vector3(0, 0, 0);
+            DualQuaternion origin_to_pivot_transform1 = new DualQuaternion(Quaternion.Identity, origin);
+            DualQuaternion origin_to_pivot_transform2 = new DualQuaternion(Quaternion.Identity, point1);
+            DualQuaternion origin_to_pivot_transform3 = new DualQuaternion(Quaternion.Identity, point2);
+            DualQuaternion origin_to_pivot_transform4 = new DualQuaternion(Quaternion.Identity, point3);
+            Quaternion dq1 = Quaternion.RotationAxis(axisZ, Math_helpers.ToRadians(90));
+            Quaternion dq2 = Quaternion.RotationAxis(axisZ, -Math_helpers.ToRadians(90));
+            Quaternion dq3 = Quaternion.RotationAxis(axisZ, Math_helpers.ToRadians(90));
+            Quaternion dq4 = Quaternion.RotationAxis(axisZ, Math_helpers.ToRadians(90));
+            Vector3 translation = new Vector3(0, 0, 0);
+            DualQuaternion LocalTransform1 = new DualQuaternion(dq1, translation);
+            DualQuaternion WorldTransform1 = DualQuaternion.Conjugate(origin_to_pivot_transform1) * LocalTransform1 * origin_to_pivot_transform1;
+            DualQuaternion LocalTransform2 = new DualQuaternion(dq2, translation);
+            DualQuaternion WorldTransform2 = DualQuaternion.Conjugate(origin_to_pivot_transform2) * LocalTransform2 * origin_to_pivot_transform2;
+            DualQuaternion LocalTransform3 = new DualQuaternion(dq3, translation);
+            DualQuaternion WorldTransform3 = DualQuaternion.Conjugate(origin_to_pivot_transform3) * LocalTransform3 * origin_to_pivot_transform3;
+            DualQuaternion LocalTransform4 = new DualQuaternion(dq4, translation);
+            DualQuaternion WorldTransform4 = DualQuaternion.Conjugate(origin_to_pivot_transform4) * LocalTransform4 * origin_to_pivot_transform4;
+            Vector3 point_in_pivot_space1 = point1.TransformByDQ(DualQuaternion.Conjugate(origin_to_pivot_transform1));
+            Vector3 transformed_point_in_pivot_space1 = point_in_pivot_space1.TransformByDQ(LocalTransform1);
+            Vector3 transformed_point1 = transformed_point_in_pivot_space1.TransformByDQ(origin_to_pivot_transform1);
+            Vector3 point_in_pivot_space2 = point2.TransformByDQ(DualQuaternion.Conjugate(origin_to_pivot_transform2));
+            Vector3 transformed_point_in_pivot_space2 = point_in_pivot_space2.TransformByDQ(LocalTransform2);
+            Vector3 transformed_point2 = transformed_point_in_pivot_space2.TransformByDQ(origin_to_pivot_transform2);
+            DualQuaternion Oo = WorldTransform4 * DualQuaternion.Conjugate(WorldTransform3 * WorldTransform2 * WorldTransform1);
+            Vector3 all_in_one = point4.TransformByDQ(WorldTransform4*WorldTransform3*WorldTransform2*WorldTransform1);
+            Vector3 back = all_in_one.TransformByDQ(DualQuaternion.Conjugate(WorldTransform4 * WorldTransform3 * WorldTransform2 * WorldTransform1));
             /*
-            HierarchicalJoint root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
             float ticksPerSecond = (float)model.Animations[0].TicksPerSecond;
             int sampling = 30;
             List<HierarchicalJoint> skeletonJoints = root.ToList();
@@ -260,7 +293,7 @@ namespace ROD_engine_DX11
             skelete = Skeleton.createFromFile("testBB.skl");
             skelete.animation.clips.Add(clip);
             skelete.animation.clipWeights.Add(1);
-
+            
             
         }
         private void SetShaders()
