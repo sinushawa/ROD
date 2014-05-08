@@ -174,15 +174,18 @@ namespace ROD_engine_DX11
             DualQuaternion WorldTransform3 = DualQuaternion.Conjugate(origin_to_pivot_transform3) * LocalTransform3 * origin_to_pivot_transform3;
             DualQuaternion LocalTransform4 = new DualQuaternion(dq4, translation);
             DualQuaternion WorldTransform4 = DualQuaternion.Conjugate(origin_to_pivot_transform4) * LocalTransform4 * origin_to_pivot_transform4;
+            DualQuaternion fWT = WorldTransform4 * WorldTransform3 * WorldTransform2 * WorldTransform1;
             Vector3 point_in_pivot_space1 = point1.TransformByDQ(DualQuaternion.Conjugate(origin_to_pivot_transform1));
             Vector3 transformed_point_in_pivot_space1 = point_in_pivot_space1.TransformByDQ(LocalTransform1);
             Vector3 transformed_point1 = transformed_point_in_pivot_space1.TransformByDQ(origin_to_pivot_transform1);
             Vector3 point_in_pivot_space2 = point2.TransformByDQ(DualQuaternion.Conjugate(origin_to_pivot_transform2));
             Vector3 transformed_point_in_pivot_space2 = point_in_pivot_space2.TransformByDQ(LocalTransform2);
             Vector3 transformed_point2 = transformed_point_in_pivot_space2.TransformByDQ(origin_to_pivot_transform2);
-            DualQuaternion Oo = WorldTransform4 * DualQuaternion.Conjugate(WorldTransform3 * WorldTransform2 * WorldTransform1);
             Vector3 all_in_one = point4.TransformByDQ(WorldTransform4*WorldTransform3*WorldTransform2*WorldTransform1);
             Vector3 back = all_in_one.TransformByDQ(DualQuaternion.Conjugate(WorldTransform4 * WorldTransform3 * WorldTransform2 * WorldTransform1));
+            DualQuaternion loco = fWT * DualQuaternion.Conjugate(WorldTransform3 * WorldTransform2 * WorldTransform1);
+            DualQuaternion ret = origin_to_pivot_transform4 * loco * DualQuaternion.Conjugate(origin_to_pivot_transform4);
+            ret.Normalize();
             /*
             float ticksPerSecond = (float)model.Animations[0].TicksPerSecond;
             int sampling = 30;

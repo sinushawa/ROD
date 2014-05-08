@@ -127,46 +127,30 @@ namespace ROD_core.Graphics.Animation
             _rootToJoint.Reverse();
             return _rootToJoint;
         }
-        private void ComputeWorldRotationTranslation(Joint _joint)
+        private DualQuaternion ComputeWorldRotationTranslation(Joint _joint, DualQuaternion _parentBindPoseWRT)
         {
-            List<Joint> _hierarchy = GetJointToRoot(_joint);
-            DualQuaternion _worldRotationTranslation = _hierarchy[0].localRotationTranslation;
-            for (int i = 1; i < _hierarchy.Count; i++)
+            Joint _parent = GetParent(_joint);
+            DualQuaternion _parentWRT = DualQuaternion.Identity;
+            if (_parent != null)
             {
-                _worldRotationTranslation =_worldRotationTranslation * _hierarchy[i].localRotationTranslation;
+                _parentWRT = _parent.worldRotationTranslation;
             }
+            DualQuaternion _worldRotationTranslation = DualQuaternion.Conjugate(_parentBindPoseWRT) * _joint.localRotationTranslation * _parentBindPoseWRT * _parentWRT;
             _joint.worldRotationTranslation = _worldRotationTranslation;
-        }
-        private DualQuaternion ComputeWorldRotationTranslation(Joint _joint, DualQuaternion BindPoseWorld)
-        {
-            List<Joint> _hierarchy = GetRootToJoint(_joint);
-            DualQuaternion _worldRotationTranslation = DualQuaternion.Identity;
-            for (int i = 0; i < _hierarchy.Count; i++)
-            {
-                _worldRotationTranslation = _worldRotationTranslation * _hierarchy[i].localRotationTranslation;
-            }
-            _worldRotationTranslation = DualQuaternion.Conjugate(BindPoseWorld) * _worldRotationTranslation * BindPoseWorld;
-            return _worldRotationTranslation;
-        }
-        public void ComputeWorldRotationTranslation()
-        {
-            foreach (Joint _joint in joints)
-            {
-                ComputeWorldRotationTranslation(_joint);
-            }
+            return _joint.worldRotationTranslation;
         }
         public List<DualQuaternion> ComputeWorldRotationTranslation(Pose _bindPose)
         {
             List<DualQuaternion> CDQs = new List<DualQuaternion>();
             for (int i = 0; i < joints.Count; i++ )
             {
-                Joint _parentInBindPose=_bindPose.GetParent(_bindPose.joints[i]);
-                DualQuaternion _parentInBindPose_WRT = DualQuaternion.Identity;
-                if (_parentInBindPose != null)
+                Joint _parentJointInBindPose = _bindPose.GetParent(_bindPose.joints[i]);
+                DualQuaternion _parentBindPoseWRT = DualQuaternion.Identity;
+                if (_parentJointInBindPose != null)
                 {
-                    _parentInBindPose_WRT = _parentInBindPose.worldRotationTranslation;
+                    _parentBindPoseWRT = _parentJointInBindPose.worldRotationTranslation;
                 }
-                CDQs.Add(ComputeWorldRotationTranslation(joints[i], _parentInBindPose_WRT));
+                CDQs.Add(ComputeWorldRotationTranslation(joints[i], _parentBindPoseWRT));
             }
             return CDQs;
         }
