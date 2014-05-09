@@ -151,64 +151,52 @@ namespace ROD_engine_DX11
             }
             root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
 
-            Vector3 point1 = new Vector3(5, 0, 0);
-            Vector3 point2 = new Vector3(5, 2, 0);
-            Vector3 point3 = new Vector3(5, 5, 0);
-            Vector3 point4 = new Vector3(8, 5, 0);
-            Vector3 axisZ = Vector3.UnitZ;
+            Vector3 Bone0 = new Vector3(0, 0, 0);
+            Vector3 Bone1 = new Vector3(5, 0, 0);
+            Vector3 Bone2 = new Vector3(5, 2, 0);
+            Vector3 Bone3 = new Vector3(5, 5, 0);
+            Vector3 Bone4 = new Vector3(8, 5, 0);
+
+            Vector3 Point1 = new Vector3(8, 5, 0);
             Vector3 origin = new Vector3(0, 0, 0);
-            DualQuaternion origin_to_pivot_transform1 = new DualQuaternion(Quaternion.Identity, origin);
-            DualQuaternion origin_to_pivot_transform2 = new DualQuaternion(Quaternion.Identity, point1);
-            DualQuaternion origin_to_pivot_transform3 = new DualQuaternion(Quaternion.Identity, point2);
-            DualQuaternion origin_to_pivot_transform4 = new DualQuaternion(Quaternion.Identity, point3);
-            Quaternion dq1 = Quaternion.RotationAxis(axisZ, Math_helpers.ToRadians(90));
-            Quaternion dq2 = Quaternion.RotationAxis(axisZ, -Math_helpers.ToRadians(90));
-            Quaternion dq3 = Quaternion.RotationAxis(axisZ, Math_helpers.ToRadians(90));
-            Quaternion dq4 = Quaternion.RotationAxis(axisZ, Math_helpers.ToRadians(90));
+            
+            DualQuaternion WB0 = new DualQuaternion(Quaternion.Identity, Bone0);
+            DualQuaternion WB1 = new DualQuaternion(Quaternion.Identity, Bone1);
+            DualQuaternion WB2 = new DualQuaternion(Quaternion.Identity, Bone2);
+            DualQuaternion WB3 = new DualQuaternion(Quaternion.Identity, Bone3);
+            DualQuaternion WB4 = new DualQuaternion(Quaternion.Identity, Bone4);
+
+            Quaternion q0 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
+            Quaternion q1 = Quaternion.RotationAxis(Vector3.UnitZ, -Math_helpers.ToRadians(90));
+            Quaternion q2 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
+            Quaternion q3 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
+  
+
             Vector3 translation = new Vector3(0, 0, 0);
-            DualQuaternion LocalTransform1 = new DualQuaternion(dq1, translation);
-            DualQuaternion WorldTransform1 = DualQuaternion.Conjugate(origin_to_pivot_transform1) * LocalTransform1 * origin_to_pivot_transform1;
-            DualQuaternion LocalTransform2 = new DualQuaternion(dq2, translation);
-            DualQuaternion WorldTransform2 = DualQuaternion.Conjugate(origin_to_pivot_transform2) * LocalTransform2 * origin_to_pivot_transform2;
-            DualQuaternion LocalTransform3 = new DualQuaternion(dq3, translation);
-            DualQuaternion WorldTransform3 = DualQuaternion.Conjugate(origin_to_pivot_transform3) * LocalTransform3 * origin_to_pivot_transform3;
-            DualQuaternion LocalTransform4 = new DualQuaternion(dq4, translation);
-            DualQuaternion WorldTransform4 = DualQuaternion.Conjugate(origin_to_pivot_transform4) * LocalTransform4 * origin_to_pivot_transform4;
-            DualQuaternion fWT = WorldTransform4 * WorldTransform3 * WorldTransform2 * WorldTransform1;
-            Vector3 point_in_pivot_space1 = point1.TransformByDQ(DualQuaternion.Conjugate(origin_to_pivot_transform1));
-            Vector3 transformed_point_in_pivot_space1 = point_in_pivot_space1.TransformByDQ(LocalTransform1);
-            Vector3 transformed_point1 = transformed_point_in_pivot_space1.TransformByDQ(origin_to_pivot_transform1);
-            Vector3 point_in_pivot_space2 = point2.TransformByDQ(DualQuaternion.Conjugate(origin_to_pivot_transform2));
-            Vector3 transformed_point_in_pivot_space2 = point_in_pivot_space2.TransformByDQ(LocalTransform2);
-            Vector3 transformed_point2 = transformed_point_in_pivot_space2.TransformByDQ(origin_to_pivot_transform2);
-            Vector3 all_in_one = point4.TransformByDQ(WorldTransform4*WorldTransform3*WorldTransform2*WorldTransform1);
-            Vector3 back = all_in_one.TransformByDQ(DualQuaternion.Conjugate(WorldTransform4 * WorldTransform3 * WorldTransform2 * WorldTransform1));
-            DualQuaternion loco = fWT * DualQuaternion.Conjugate(WorldTransform3 * WorldTransform2 * WorldTransform1);
-            DualQuaternion ret = origin_to_pivot_transform4 * loco * DualQuaternion.Conjugate(origin_to_pivot_transform4);
-            ret.Normalize();
-            /*
-            float ticksPerSecond = (float)model.Animations[0].TicksPerSecond;
-            int sampling = 30;
-            List<HierarchicalJoint> skeletonJoints = root.ToList();
-            for (int i = 0; i < model.Animations[0].NodeAnimationChannelCount; i++)
-            {
-                string name = model.Animations[0].NodeAnimationChannels[i].NodeName;
-                HierarchicalJoint currentJoint = skeletonJoints.FirstOrDefault(x => x.name == model.Animations[0].NodeAnimationChannels[i].NodeName);
-                if (currentJoint != null)
-                {
-                    Quaternion _q = Quaternion.Identity;
-                    Vector3 _v = Vector3.Zero;
-                    int step = model.Animations[0].NodeAnimationChannels[i].RotationKeys.Length / sampling;
-                    for (int j = 0; j <= step; j++)
-                    {
-                        _q = model.Animations[0].NodeAnimationChannels[i].RotationKeys[j*sampling].Value.ConvertTo();
-                        _v = model.Animations[0].NodeAnimationChannels[i].PositionKeys[j * sampling].Value.ConvertTo();
-                    }
-                    DualQuaternion DQ = new DualQuaternion(_q, _v);
-                    currentJoint.localRotationTranslation = DQ;
-                }
-            }
-             */
+            DualQuaternion LocalTransform0 = new DualQuaternion(q0, translation);
+
+            DualQuaternion test = WB0 * LocalTransform0;
+            DualQuaternion retour_WB0 = test * DualQuaternion.Conjugate(LocalTransform0);
+            DualQuaternion retour_LocalTransform0 = test * DualQuaternion.Conjugate(WB0);
+
+            Vector3 trans = Point1.TransformByDQ(test);
+
+            DualQuaternion WT0 = DualQuaternion.Conjugate(WB0) * LocalTransform0 * WB0 * DualQuaternion.Identity;
+            DualQuaternion LocalTransform1 = new DualQuaternion(q1, translation);
+            DualQuaternion WT1 = DualQuaternion.Conjugate(WB1) * LocalTransform1 * WB1 * WT0;
+            DualQuaternion LocalTransform2 = new DualQuaternion(q2, translation);
+            DualQuaternion WT2 = DualQuaternion.Conjugate(WB2) * LocalTransform2 * WB2 * WT1;
+            DualQuaternion LocalTransform3 = new DualQuaternion(q3, translation);
+            DualQuaternion WT3 = DualQuaternion.Conjugate(WB3) * LocalTransform3 * WB3 * WT2;
+
+            DualQuaternion fullLength = DualQuaternion.Conjugate(WB3) * LocalTransform3 * WB3 * DualQuaternion.Conjugate(WB2) * LocalTransform2 * WB2 * DualQuaternion.Conjugate(WB1) * LocalTransform1 * WB1 * LocalTransform0;
+
+            DualQuaternion LL0 = new DualQuaternion(Quaternion.Identity, new Vector3(0, 0, 0));
+
+            DualQuaternion oneRetLT3 = WB3 * WT2 * DualQuaternion.Conjugate(WT3) * DualQuaternion.Conjugate(WB3);
+
+            Vector3 all_in_one = Point1.TransformByDQ(WT3);
+
             render_texture = new ROD_core.RenderToTexture.RenderTexture();
             bool render_target_initialization_result = render_texture.Initialize(Device, frame_width, frame_height);
             sq = new ROD_core.RenderToTexture.ScreenQuad();

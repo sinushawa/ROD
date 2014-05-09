@@ -128,7 +128,7 @@ namespace ROD_core.Mathematics
         }
         public static Vector3 GetTranslation(DualQuaternion q)
         {
-            Quaternion t =Quaternion.Conjugate(q.real)* (q.dual * 2.0f) ;
+            Quaternion t = (2.0f * q.dual) * Quaternion.Conjugate(q.real);
             return new Vector3(t.X, t.Y, t.Z);
         }
         public static Matrix DualQuaternionToMatrix(DualQuaternion q)
