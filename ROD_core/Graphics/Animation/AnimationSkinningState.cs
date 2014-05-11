@@ -24,8 +24,8 @@ namespace ROD_core.Graphics.Animation
             List<Joint> currentJoints = currentPose.joints;
             for (int i=0; i<jointsPerId.Count; i++)
             {
-                List<DualQuaternion> DQs = jointsPerId[i].Select(x=> x.localRotationTranslation).ToList();
-                currentPose.joints[i].localRotationTranslation = DualQuaternion.DLB(DQs, weights);
+                List<DualQuaternion> DQs = jointsPerId[i].Select(x=> x.worldRotationTranslation).ToList();
+                currentPose.joints[i].worldRotationTranslation = DualQuaternion.DLB(DQs, weights);
             }
             return currentPose;
         }

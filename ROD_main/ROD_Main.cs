@@ -151,51 +151,73 @@ namespace ROD_engine_DX11
             }
             root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
 
-            Vector3 Bone0 = new Vector3(0, 0, 0);
-            Vector3 Bone1 = new Vector3(5, 0, 0);
-            Vector3 Bone2 = new Vector3(5, 2, 0);
-            Vector3 Bone3 = new Vector3(5, 5, 0);
-            Vector3 Bone4 = new Vector3(8, 5, 0);
 
-            Vector3 Point1 = new Vector3(8, 5, 0);
+            /*
+            Vector3 Bone0 = new Vector3(0, 0, 0);
+            Vector3 Bone1 = new Vector3(2, 0, 0);
+            Vector3 Bone2 = new Vector3(2, 2, 0);
+
+            Vector3 Point1 = new Vector3(2, 3, 0);
+            Vector3 Pointx = new Vector3(2, 2, 0);
             Vector3 origin = new Vector3(0, 0, 0);
             
             DualQuaternion WB0 = new DualQuaternion(Quaternion.Identity, Bone0);
             DualQuaternion WB1 = new DualQuaternion(Quaternion.Identity, Bone1);
             DualQuaternion WB2 = new DualQuaternion(Quaternion.Identity, Bone2);
-            DualQuaternion WB3 = new DualQuaternion(Quaternion.Identity, Bone3);
-            DualQuaternion WB4 = new DualQuaternion(Quaternion.Identity, Bone4);
 
             Quaternion q0 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
             Quaternion q1 = Quaternion.RotationAxis(Vector3.UnitZ, -Math_helpers.ToRadians(90));
             Quaternion q2 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
-            Quaternion q3 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
-  
+
+            DualQuaternion LocalTransform0 = new DualQuaternion(q0, Vector3.Zero);
+            DualQuaternion LocalTransform1 = new DualQuaternion(q1, Vector3.Zero);
+            DualQuaternion LocalTransform2 = new DualQuaternion(Quaternion.Identity, Vector3.Zero);
+
+            DualQuaternion WT0 = LocalTransform0 * WB0;
+            DualQuaternion WT1 = LocalTransform1 * DualQuaternion.Conjugate(WB0) * WB1;
+            DualQuaternion WT2 = LocalTransform2 * DualQuaternion.Conjugate(WB1) * WB2;
+
+            DualQuaternion FT2 = WT0 * WT1 * WT2;
+
+            Vector3 all_in_one = Point1.TransformByDQ(DualQuaternion.Conjugate(WB0)*FT2);
+            */
+
+            Vector3 point1 = new Vector3(0, 0, 0);
+            Vector3 point2 = new Vector3(2, 0, 0);
+            Vector3 point3 = new Vector3(2, 2, 0);
+            Vector3 point4 = new Vector3(2, 3, 0);
+            Vector3 axisZ = Vector3.UnitZ;
+            Vector3 Bone1 = new Vector3(0, 0, 0);
+            Vector3 Bone2 = new Vector3(2, 0, 0);
+            Vector3 Bone3 = new Vector3(2, 2, 0);
+
+            DualQuaternion WB1 = new DualQuaternion(Quaternion.Identity, Bone1);
+            DualQuaternion WB2 = new DualQuaternion(Quaternion.Identity, Bone2);
+            DualQuaternion WB3 = new DualQuaternion(Quaternion.Identity, Bone3);
+
+            Quaternion q1 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
+            Quaternion q2 = Quaternion.RotationAxis(Vector3.UnitZ, -Math_helpers.ToRadians(90));
+            Quaternion q3 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(0));
 
             Vector3 translation = new Vector3(0, 0, 0);
-            DualQuaternion LocalTransform0 = new DualQuaternion(q0, translation);
-
-            DualQuaternion test = WB0 * LocalTransform0;
-            DualQuaternion retour_WB0 = test * DualQuaternion.Conjugate(LocalTransform0);
-            DualQuaternion retour_LocalTransform0 = test * DualQuaternion.Conjugate(WB0);
-
-            Vector3 trans = Point1.TransformByDQ(test);
-
-            DualQuaternion WT0 = DualQuaternion.Conjugate(WB0) * LocalTransform0 * WB0 * DualQuaternion.Identity;
-            DualQuaternion LocalTransform1 = new DualQuaternion(q1, translation);
-            DualQuaternion WT1 = DualQuaternion.Conjugate(WB1) * LocalTransform1 * WB1 * WT0;
+            DualQuaternion LocalTransform1 = new DualQuaternion(q3, translation);
+            DualQuaternion ParentTransform1 = DualQuaternion.Conjugate(WB1) * LocalTransform1 * WB1;
+            DualQuaternion WorldTransform1 = DualQuaternion.Conjugate(WB1) * LocalTransform1 * WB1 * DualQuaternion.Identity;
             DualQuaternion LocalTransform2 = new DualQuaternion(q2, translation);
-            DualQuaternion WT2 = DualQuaternion.Conjugate(WB2) * LocalTransform2 * WB2 * WT1;
+            DualQuaternion ParentTransform2 = DualQuaternion.Conjugate(WB2) * LocalTransform2 * WB2;
+            DualQuaternion WorldTransform2 = DualQuaternion.Conjugate(WB2) * LocalTransform2 * WB2 * ParentTransform1;
             DualQuaternion LocalTransform3 = new DualQuaternion(q3, translation);
-            DualQuaternion WT3 = DualQuaternion.Conjugate(WB3) * LocalTransform3 * WB3 * WT2;
+            DualQuaternion ParentTransform3 = DualQuaternion.Conjugate(WB3) * LocalTransform3 * WB3;
+            DualQuaternion WorldTransform3 = ParentTransform3 * WorldTransform2;
 
-            DualQuaternion fullLength = DualQuaternion.Conjugate(WB3) * LocalTransform3 * WB3 * DualQuaternion.Conjugate(WB2) * LocalTransform2 * WB2 * DualQuaternion.Conjugate(WB1) * LocalTransform1 * WB1 * LocalTransform0;
+            DualQuaternion offT3 = WorldTransform3 * WorldTransform2.Conjugate();
+            DualQuaternion offB3 = WB3 * WB2.Conjugate();
+            DualQuaternion Oo = offT3 * offB3.Conjugate();
+            DualQuaternion backy = offT3 * WorldTransform2;
 
-            DualQuaternion LL0 = new DualQuaternion(Quaternion.Identity, new Vector3(0, 0, 0));
+            Vector3 all_in_one = point4.TransformByDQ(WorldTransform3);
+            Vector3 back = all_in_one.TransformByDQ(DualQuaternion.Conjugate(ParentTransform3 * ParentTransform2 * ParentTransform1));
 
-            DualQuaternion oneRetLT3 = WB3 * WT2 * DualQuaternion.Conjugate(WT3) * DualQuaternion.Conjugate(WB3);
-
-            Vector3 all_in_one = Point1.TransformByDQ(WT3);
 
             render_texture = new ROD_core.RenderToTexture.RenderTexture();
             bool render_target_initialization_result = render_texture.Initialize(Device, frame_width, frame_height);
@@ -278,13 +300,13 @@ namespace ROD_engine_DX11
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
             world = Matrix.Identity;
 
-            Clip_Skinning clip = Clip_Skinning.createFromFile("testBB.clp");
+            Clip_Skinning clip = Clip_Skinning.createFromFile("anim.clp");
             clip.Init();
             clip.isPlaying = true;
-            skelete = Skeleton.createFromFile("testBB.skl");
-            skelete.animation.clips.Add(clip);
-            skelete.animation.clipWeights.Add(1);
-            
+            skelete = Skeleton.createFromFile("skeleton.skl");
+            skelete.Animation.clips.Add(clip);
+            skelete.Animation.clipWeights.Add(1);
+            skelete.Precalculate();
             
         }
         private void SetShaders()

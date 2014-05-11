@@ -181,5 +181,9 @@ namespace ROD_core.Mathematics
             Vector3 dualDQXYZ = new Vector3(DQ.dual.X, DQ.dual.Y, DQ.dual.Z);
             return _point + 2 * Vector3.Cross(realDQXYZ, Vector3.Cross(realDQXYZ, _point) + DQ.real.W * _point) + 2 * (DQ.real.W * dualDQXYZ - DQ.dual.W * realDQXYZ + Vector3.Cross(realDQXYZ, dualDQXYZ));
         }
+        public static DualQuaternion Conjugate(this DualQuaternion DQ)
+        {
+            return DualQuaternion.Conjugate(DQ);
+        }
     }
 }

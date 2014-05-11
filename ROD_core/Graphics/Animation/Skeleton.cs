@@ -30,7 +30,18 @@ namespace ROD_core.Graphics.Animation
         public Pose currentPose;
         public DualQuaternion[] BonePalette;
 
-        public AnimationSkinningState animation;
+        private AnimationSkinningState animation;
+        public AnimationSkinningState Animation
+        {
+            get
+            {
+                return animation;
+            }
+            set
+            {
+                animation = (AnimationSkinningState)value;
+            }
+        }
 
         public Skeleton(string _name)
         {
@@ -90,31 +101,30 @@ namespace ROD_core.Graphics.Animation
         public void Update(float _delta)
         {
             currentPose = animation.ComputeLocalPose(_delta);
+            //currentPose.CalculateWorldTransform(bindPose);
             //currentPose = animation.clips[0].nextPose;
             GetJointWTMList();
         }
         public List<DualQuaternion> GetJointWTMList()
         {
             //currentPose.ComputeWorldRotationTranslation();
-            List<DualQuaternion> CDQts = currentPose.ComputeWorldRotationTranslation(bindPose);
-            List<DualQuaternion> CDQs = currentPose.joints.Zip(bindPose.joints, (x, y) =>DualQuaternion.Conjugate(y.worldRotationTranslation)* x.worldRotationTranslation).ToList();
+            List<DualQuaternion> CDQts = currentPose.ComputeWorldRotationTranslation();
             BonePalette = CDQts.ToArray();
-            return CDQs;
+            return CDQts;
         }
-        /*
-        public List<DualQuaternion> GetJointWTMList()
+        public void Precalculate()
         {
-            List<Joint> _localJoint = currentPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
-            List<Joint> _bindJoints = bindPose.GetJoints(TreeNavigation.depth_first).Select(x => x).ToList();
-            List<DualQuaternion> CDQs = _localJoint.Zip(_bindJoints, (x, y) => x.localRotationTranslation * DualQuaternion.Conjugate(y.localRotationTranslation)).ToList();
-            for (int i = 0; i < _localJoint.Count; i++)
+            foreach (Clip_Skinning _clip in animation.clips)
             {
-                _localJoint[i].localRotationTranslation = CDQs[i];
+                foreach (Pose _pose in _clip.sequencesData)
+                {
+                    foreach (Joint _joint in _pose.joints)
+                    {
+                        DualQuaternion WorldBinding = bindPose.GetJointById(_joint.id).worldRotationTranslation;
+                        _joint.worldRotationTranslation = WorldBinding.Conjugate() * _joint.localRotationTranslation * WorldBinding;
+                    }
+                }
             }
-            List<DualQuaternion> WDQs = currentPose.GetWorldTransformVersion().GetJoints(TreeNavigation.depth_first).Select(x => x.localRotationTranslation).ToList();
-            BonePalette = WDQs.ToArray();
-            return CDQs;
         }
-         * */
     }
 }
