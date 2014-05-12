@@ -61,7 +61,9 @@ namespace ROD_core
 		[SemanticAttribute(SharpDX.DXGI.Format.R32_Float, typeof(float))]
 		PSIZE = (1 << 8),
 		[SemanticAttribute(SharpDX.DXGI.Format.R32G32B32_Float, typeof(Vector3))]
-		TANGENT = (1 << 9)
+		TANGENT = (1 << 9),
+        [SemanticAttribute(SharpDX.DXGI.Format.R8_UInt, typeof(byte))]
+        ID = (1 << 10)
 	}
 
 	public class InputElementAttribute : Attribute

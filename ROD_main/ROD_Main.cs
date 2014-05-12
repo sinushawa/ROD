@@ -23,7 +23,6 @@ using Assimp;
 using Quaternion = SharpDX.Quaternion;
 using Material = ROD_core.Graphics.Assets.Material;
 using Mesh = ROD_core.Graphics.Assets.Mesh;
-using ROD_core.Mathematics.Conversions.Assimp;
 
 namespace ROD_engine_DX11
 {
@@ -133,54 +132,6 @@ namespace ROD_engine_DX11
         {
             scene = new ROD_core.Scene();
             scene.Initialize();
-
-            AssimpImporter importer = new AssimpImporter();
-            Scene model = importer.ImportFile("AsMan.DAE", PostProcessPreset.TargetRealTimeMaximumQuality);
-            int bonesNb = model.Meshes[0].Bones.Length;
-            List<Joint> readable = new List<Joint>();
-            Node[] childs = model.RootNode.Children;
-            for (int i = 0; i < bonesNb; i++)
-            {
-                Assimp.Quaternion _q = new Assimp.Quaternion();
-                Assimp.Vector3D _t = new Vector3D();
-                model.Meshes[0].Bones[i].OffsetMatrix.DecomposeNoScaling(out _q, out _t);
-                DualQuaternion DQ = new DualQuaternion(_q.ConvertTo(), _t.ConvertTo());
-                Joint _bindJoint = new Joint(i, model.Meshes[0].Bones[i].Name);
-                _bindJoint.worldRotationTranslation = DQ;
-                readable.Add(_bindJoint);
-            }
-            root = AssimpSkeleton.ConstructSkeleton(childs, null, readable);
-
-
-            /*
-            Vector3 Bone0 = new Vector3(0, 0, 0);
-            Vector3 Bone1 = new Vector3(2, 0, 0);
-            Vector3 Bone2 = new Vector3(2, 2, 0);
-
-            Vector3 Point1 = new Vector3(2, 3, 0);
-            Vector3 Pointx = new Vector3(2, 2, 0);
-            Vector3 origin = new Vector3(0, 0, 0);
-            
-            DualQuaternion WB0 = new DualQuaternion(Quaternion.Identity, Bone0);
-            DualQuaternion WB1 = new DualQuaternion(Quaternion.Identity, Bone1);
-            DualQuaternion WB2 = new DualQuaternion(Quaternion.Identity, Bone2);
-
-            Quaternion q0 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
-            Quaternion q1 = Quaternion.RotationAxis(Vector3.UnitZ, -Math_helpers.ToRadians(90));
-            Quaternion q2 = Quaternion.RotationAxis(Vector3.UnitZ, Math_helpers.ToRadians(90));
-
-            DualQuaternion LocalTransform0 = new DualQuaternion(q0, Vector3.Zero);
-            DualQuaternion LocalTransform1 = new DualQuaternion(q1, Vector3.Zero);
-            DualQuaternion LocalTransform2 = new DualQuaternion(Quaternion.Identity, Vector3.Zero);
-
-            DualQuaternion WT0 = LocalTransform0 * WB0;
-            DualQuaternion WT1 = LocalTransform1 * DualQuaternion.Conjugate(WB0) * WB1;
-            DualQuaternion WT2 = LocalTransform2 * DualQuaternion.Conjugate(WB1) * WB2;
-
-            DualQuaternion FT2 = WT0 * WT1 * WT2;
-
-            Vector3 all_in_one = Point1.TransformByDQ(DualQuaternion.Conjugate(WB0)*FT2);
-            */
 
             Vector3 point1 = new Vector3(0, 0, 0);
             Vector3 point2 = new Vector3(2, 0, 0);
