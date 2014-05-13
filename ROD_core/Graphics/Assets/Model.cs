@@ -26,23 +26,22 @@ namespace ROD_core.Graphics.Assets
         {
 
         }
-        public Model(Mesh _mesh)
+        public Model(Mesh _mesh) : this(_mesh, new Material("void"), false, false)
         {
-            mesh = _mesh;
-            modelName = _mesh.meshName;
         }
-        public Model(Mesh _mesh, Material _material)
+        public Model(Mesh _mesh, Material _material): this(_mesh, _material, false, false)
         {
-            mesh = _mesh;
-            material = _material;
-            modelName = _mesh.meshName;
         }
-        public Model(Mesh _mesh, Material _material, bool _isTesselated)
+        public Model(Mesh _mesh, Material _material, bool _isTesselated) : this(_mesh, _material, _isTesselated, false)
+        {
+        }
+        public Model(Mesh _mesh, Material _material, bool _isTesselated, bool _isSkinned)
         {
             mesh = _mesh;
             material = _material;
             isTesselated = _isTesselated;
             modelName = _mesh.meshName;
+            isSkinned = _isSkinned;
         }
 
         public void Initialize(Device Device)

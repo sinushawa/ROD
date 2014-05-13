@@ -10,12 +10,11 @@ namespace ROD_core.Graphics.Assets
     {
         public Skeleton skeleton;
 
-        public Entity(Mesh _mesh, Material _material) : this(_mesh, _material, false)
+        public Entity(Mesh _mesh, Material _material) : this(_mesh, _material, false, false)
         {
         }
-        public Entity(Mesh _mesh, Material _material, bool _isTesselated): base(_mesh, _material, _isTesselated)
+        public Entity(Mesh _mesh, Material _material, bool _isTesselated, bool _isSkinned): base(_mesh, _material, _isTesselated, _isSkinned)
         {
-            isSkinned = true;
         }
     }
 }

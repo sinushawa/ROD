@@ -203,7 +203,7 @@ namespace ROD_engine_DX11
             //
 
             Mesh body_mesh = Mesh.createFromFile("testBB.rod");
-            Entity body = new Entity(body_mesh, body_material, false);
+            Entity body = new Entity(body_mesh, body_material, false, true);
             /*
             Mesh body_mesh = Mesh.createFromFile("bodyBB.rod");
             Model body = new Model(body_mesh, body_material, true);
