@@ -17,6 +17,7 @@ namespace ROD_core.Graphics.Animation
         public int parentId;
         public DualQuaternion worldRotationTranslation;
         public DualQuaternion localRotationTranslation;
+        public CurveHandle curveHandle;
 
         public Joint(int _id, string _name)
             : this(_id, _name, -1, DualQuaternion.Identity, DualQuaternion.Identity)
@@ -25,13 +26,17 @@ namespace ROD_core.Graphics.Animation
         public Joint(int _id, string _name, int _parentId) : this( _id, _name, _parentId, DualQuaternion.Identity, DualQuaternion.Identity)
         {
         }
-        public Joint(int _id, string _name, int _parentId, DualQuaternion _worldRotationTranslation, DualQuaternion _localRotationTranslation)
+        public Joint(int _id, string _name, int _parentId, DualQuaternion _worldRotationTranslation, DualQuaternion _localRotationTranslation) : this(_id, _name, _parentId, _worldRotationTranslation, _localRotationTranslation, new CurveHandle())
+        {
+        }
+        public Joint(int _id, string _name, int _parentId, DualQuaternion _worldRotationTranslation, DualQuaternion _localRotationTranslation, CurveHandle _curveHandle)
         {
             id = _id;
             name = _name;
             parentId = _parentId;
             worldRotationTranslation = _worldRotationTranslation;
             localRotationTranslation = _localRotationTranslation;
+            curveHandle = _curveHandle;
         }
 
         protected Joint(SerializationInfo info, StreamingContext context)
