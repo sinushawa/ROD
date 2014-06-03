@@ -1,0 +1,142 @@
+cbuffer psConstant
+{
+	float4 LightColor;
+};
+
+Texture2D dtext: register(t0);            // Diffuse texture for mesh
+Texture2D ntext: register(t1);            // normal texture for mesh
+Texture2D stext: register(t2);            // specular texture for mesh
+
+SamplerState MeshTextureSampler : register(s0);
+
+struct DS_OUTPUT
+{
+	float4 Position     : SV_POSITION;
+	float3 Normal		: NORMAL;
+	float2 Texcoord		: TEXCOORD;
+	float3 Binormal		: BINORMAL;
+	float3 Tangent		: TANGENT;
+	float3 ViewDirection : TEXCOORD1;
+	float3 LightDirection : TEXCOORD2;
+};
+
+float2 LightingFuncGGX_FV(float dotLH, float roughness)
+{
+	float alpha = roughness*roughness;
+
+	// F
+	float F_a, F_b;
+	float dotLH5 = pow(1.0f-dotLH,5);
+	F_a = 1.0f;
+	F_b = dotLH5;
+
+	// V
+	float vis;
+	float k = alpha/2.0f;
+	float k2 = k*k;
+	float invK2 = 1.0f-k2;
+	vis = rcp(dotLH*dotLH*invK2 + k2);
+
+	return float2(F_a*vis,F_b*vis);
+}
+
+float LightingFuncGGX_D(float dotNH, float roughness)
+{
+	float alpha = roughness*roughness;
+	float alphaSqr = alpha*alpha;
+	float pi = 3.14159f;
+	float denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0f;
+
+	float D = alphaSqr/(pi * denom * denom);
+	return D;
+}
+
+float LightingFuncGGX_OPT3(float3 N, float3 V, float3 L, float roughness, float F0)
+{
+	float3 H = normalize(V+L);
+
+	float dotNL = saturate(dot(N,L));
+	float dotLH = saturate(dot(L,H));
+	float dotNH = saturate(dot(N,H));
+
+	float D = LightingFuncGGX_D(dotNH,roughness);
+	float2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);
+	float FV = F0*FV_helper.x + (1.0f-F0)*FV_helper.y;
+	float specular = dotNL * D * FV;
+
+	return specular;
+}
+
+float3 Uncharted2Tonemap(float3 x)
+{
+	float A = 0.15;
+	float B = 0.50;
+	float C = 0.10;
+	float D = 0.20;
+	float E = 0.02;
+	float F = 0.30;
+	float W = 11.2;
+
+	return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
+}
+
+float4 PS(DS_OUTPUT input) : SV_TARGET
+{
+	float4 textureColor;
+	float4 bumpMap;
+	float4 roughnessMap;
+	float3 totalNormal;
+	float3 lightDir;
+	float lightIntensity;
+	float4 color;
+
+
+	// Sample the texture pixel at this location.
+	textureColor = pow(dtext.Sample(MeshTextureSampler, input.Texcoord) , 2.2);
+	
+	// Sample the pixel in the bump map.
+	bumpMap =  ntext.Sample(MeshTextureSampler, input.Texcoord);
+
+	roughnessMap = stext.Sample(MeshTextureSampler, input.Texcoord);
+
+	// Expand the range of the normal value from (0, +1) to (-1, +1).
+	// I had to invert the bump because of faulty exporter
+	bumpMap = (-bumpMap * 2.0f) + 1.0f;
+
+	// Calculate the normal from the data in the bump map.
+	totalNormal = input.Normal + bumpMap.x * input.Tangent + bumpMap.y * input.Binormal;
+	
+	// Normalize the resulting bump normal.
+	totalNormal = normalize(totalNormal);
+
+	// Calculate the amount of light on this pixel based on the total normal value.
+	lightIntensity =  saturate(dot(totalNormal, input.LightDirection));
+
+
+	// (normal, viewDirection, LightDirection, roughness, intensity)
+	float specGGX = LightingFuncGGX_OPT3(totalNormal, input.ViewDirection, input.LightDirection, 0.65f, 0.2f);
+
+	
+	float3 Specular = specGGX;
+
+	float3 cDiffus = textureColor;
+
+	// additional ambient light
+	float ambientLight = 0.08f;
+
+	float4 outputColor = float4( (lightIntensity) * (cDiffus + Specular ), 1.0f );
+
+
+	outputColor *= 12;  // Hardcoded Exposure Adjustment
+
+	float ExposureBias = 2.0f;
+	float3 curr = Uncharted2Tonemap(ExposureBias*outputColor.xyz);
+	float3 W = float3(11.2f,11.2f,11.2f);
+	float3 whiteScale = 1.0f/Uncharted2Tonemap(W);
+	float4 colorD = float4(curr*whiteScale, 1.0f);
+
+	outputColor = pow (colorD , 1/2.2);
+ 
+    // Composite the final value:
+    return outputColor;
+}

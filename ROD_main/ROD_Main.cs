@@ -78,7 +78,7 @@ namespace ROD_engine_DX11
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.VertexShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselationSkinning.vs", "VS", "vs_5_0",ShaderFlags.Debug|ShaderFlags.SkipOptimization)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.HullShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.hs", "HS", "hs_5_0",ShaderFlags.Debug)),
                 new ROD_core.ByteCodeBind(ROD_core.Shaders.DomainShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation.ds", "DS", "ds_5_0",ShaderFlags.Debug)),
-                new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselation_ward.ps", "PS", "ps_5_0",ShaderFlags.Debug))
+                new ROD_core.ByteCodeBind(ROD_core.Shaders.PixelShader, ShaderBytecode.CompileFromFile(@"shaders\DiffuseNormalTesselationGGX.ps", "PS", "ps_5_0",ShaderFlags.Debug))
             };
             ROD_core.ShaderSolution ShSolutionDNTS = new ROD_core.ShaderSolution("DNS_TesS", Device, ShadersByteCodeDNTS);
             ROD_core.Technique DNTS = ROD_core.Technique.Diffuse_mapping | ROD_core.Technique.Normal_mapping | ROD_core.Technique.Specular_mapping | ROD_core.Technique.Tesslation | ROD_core.Technique.Skinning;
@@ -203,7 +203,7 @@ namespace ROD_engine_DX11
             //
 
             Mesh body_mesh = Mesh.createFromFile("testBB.rod");
-            Entity body = new Entity(body_mesh, body_material, false, true);
+            Entity body = new Entity(body_mesh, body_material, true, true);
             /*
             Mesh body_mesh = Mesh.createFromFile("bodyBB.rod");
             Model body = new Model(body_mesh, body_material, true);

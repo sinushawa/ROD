@@ -110,15 +110,15 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="shaders\DiffuseNormalSkinningBind.vs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="shaders\DiffuseNormalTesselationGGX.ps">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="shaders\DiffuseNormalTesselationSkinning.vs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="shaders\DiffuseNormalSpecular.ps" />
     <None Include="shaders\DiffuseNormalSkinning.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="shaders\DiffuseNormalTesselationSkinning.vs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="shaders\DiffuseNormalTesselation_ward.ps">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

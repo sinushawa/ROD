@@ -21,7 +21,7 @@ struct VS_INPUT
 	float2 Texcoord		  : TEXCOORD;
 	float3 Binormal		  : BINORMAL;
 	float3 Tangent		  : TANGENT;
-	uint4 BoneIndices    : BLENDINDICES;
+	uint4 BoneIndices     : BLENDINDICES;
 	float4 Boneweights    : BLENDWEIGHT;
 
 };

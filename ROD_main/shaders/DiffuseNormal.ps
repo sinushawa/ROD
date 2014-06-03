@@ -32,7 +32,7 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 
 
     // Sample the texture pixel at this location.
-    textureColor = dtext.Sample(MeshTextureSampler, input.Texcoord);
+    textureColor = pow(dtext.Sample(MeshTextureSampler, input.Texcoord) , 2.2);
 	
     // Sample the pixel in the bump map.
     bumpMap =  ntext.Sample(MeshTextureSampler, input.Texcoord);
@@ -52,11 +52,14 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
     // Calculate the amount of light on this pixel based on the bump map normal value.
     lightIntensity = saturate(dot(bumpNormal, lightDir));
 
+
     // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-    color = saturate(LightColor * lightIntensity)+0.085f;
+    color = saturate(LightColor * lightIntensity)+0.008f;
+
 
     // Combine the final bump light color with the texture color.
     color = color * textureColor;
 	
+	color = pow (color , 1/2.2);
     return color;
 }
