@@ -46,6 +46,7 @@ namespace ROD_engine_DX11
         private Vector3 lightPos;
         private Quaternion lightRotation;
         private Vector4 lightColor;
+        private float lightIntensity;
         private Matrix world;
         private Matrix viewproj;
         private Skeleton skelete;
@@ -249,6 +250,7 @@ namespace ROD_engine_DX11
             lightPos = new Vector3(0.0f, 1.0f, -3.0f);
             lightRotation = Quaternion.Identity;
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
+            lightIntensity = 1750.0f;
             world = Matrix.Identity;
 
             Clip_Skinning clip = Clip_Skinning.createFromFile("anim.clp");
@@ -267,6 +269,7 @@ namespace ROD_engine_DX11
             ROD_core.ShaderBinding.ConstantsPool.Add("eyePos", new ROD_core.Constant_Variable<Vector3>(ref camera.cameraTransformed.eye));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightPos", new ROD_core.Constant_Variable<Vector3>(ref lightPos));
             ROD_core.ShaderBinding.ConstantsPool.Add("LightColor", new ROD_core.Constant_Variable<Vector4>(ref lightColor));
+            ROD_core.ShaderBinding.ConstantsPool.Add("LightIntensity", new ROD_core.Constant_Variable<float>(ref lightIntensity));
             ROD_core.ShaderBinding.ConstantsPool.Add("BoneDQ", new ROD_core.Constant_Variable<DualQuaternion>(ref skelete.BonePalette));
 
             ROD_core.ShaderBinding.BuildBuffers(Device);

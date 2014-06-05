@@ -1,6 +1,8 @@
 cbuffer psConstant
 {
+	float3 LightPos;
 	float4 LightColor;
+	float LightIntensity;
 };
 
 Texture2D dtext: register(t0);            // Diffuse texture for mesh
@@ -112,9 +114,11 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 	// Calculate the amount of light on this pixel based on the total normal value.
 	lightIntensity =  saturate(dot(totalNormal, input.LightDirection));
 
+	float pi = 3.14159f;
+	float luminanceAtPoint = LightIntensity / (4*pi*pow(length(input.Position-LightPos), 2));
 
 	// (normal, viewDirection, LightDirection, roughness, intensity)
-	float specGGX = LightingFuncGGX_OPT3(totalNormal, input.ViewDirection, input.LightDirection, 0.65f, 0.2f);
+	float specGGX = LightingFuncGGX_OPT3(totalNormal, input.ViewDirection, input.LightDirection, 0.8f, 1.0f);
 
 	
 	float3 Specular = specGGX;
@@ -124,8 +128,7 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 	// additional ambient light
 	float ambientLight = 0.08f;
 
-	float4 outputColor = float4( (lightIntensity) * (cDiffus + Specular ), 1.0f );
-
+	float4 outputColor = float4( (lightIntensity*luminanceAtPoint) * (cDiffus + Specular ), 1.0f );
 
 	outputColor *= 12;  // Hardcoded Exposure Adjustment
 
@@ -136,6 +139,7 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 	float4 colorD = float4(curr*whiteScale, 1.0f);
 
 	outputColor = pow (colorD , 1/2.2);
+
  
     // Composite the final value:
     return outputColor;
