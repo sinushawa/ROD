@@ -250,7 +250,7 @@ namespace ROD_engine_DX11
             lightPos = new Vector3(0.0f, 1.0f, -3.0f);
             lightRotation = Quaternion.Identity;
             lightColor = new Vector4(1f, 1f, 1f, 1.0f);
-            lightIntensity = 1750.0f;
+            lightIntensity = 250000.0f;
             world = Matrix.Identity;
 
             Clip_Skinning clip = Clip_Skinning.createFromFile("anim.clp");

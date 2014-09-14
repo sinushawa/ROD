@@ -94,7 +94,7 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 
 
 	// Sample the texture pixel at this location.
-	textureColor = pow(dtext.Sample(MeshTextureSampler, input.Texcoord) , 2.2);
+	textureColor = pow(dtext.Sample(MeshTextureSampler, input.Texcoord) , 1.8);
 	
 	// Sample the pixel in the bump map.
 	bumpMap =  ntext.Sample(MeshTextureSampler, input.Texcoord);
@@ -132,13 +132,13 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 
 	outputColor *= 12;  // Hardcoded Exposure Adjustment
 
-	float ExposureBias = 2.0f;
+	float ExposureBias = 8.0f;
 	float3 curr = Uncharted2Tonemap(ExposureBias*outputColor.xyz);
 	float3 W = float3(11.2f,11.2f,11.2f);
 	float3 whiteScale = 1.0f/Uncharted2Tonemap(W);
 	float4 colorD = float4(curr*whiteScale, 1.0f);
 
-	outputColor = pow (colorD , 1/2.2);
+	outputColor = pow (colorD , 1/1.8);
 
  
     // Composite the final value:
